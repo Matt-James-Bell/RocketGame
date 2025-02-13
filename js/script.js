@@ -5,10 +5,11 @@ let gameActive = false;
 let crashed = false;
 let crashPoint;
 let startTime;
+let balance = 0; // Accumulated discount balance
 
-const rocketContainerHeight = 500; // Should match CSS #rocket-container height
+const rocketContainerHeight = 500; // Must match CSS #rocket-container height
 
-// Start the game and reset state
+// Start (Ignite) the game and reset state
 function startGame() {
   discount = 0.01;
   crashed = false;
@@ -17,7 +18,7 @@ function startGame() {
   updateDisplay();
   document.getElementById("status").textContent = "Game in progress... Press Cash Out anytime!";
   document.getElementById("cashout").disabled = false;
-  document.getElementById("start").disabled = true;
+  document.getElementById("ignite").disabled = true;
 
   // Reset displays: show rocket wrapper and hide explosion
   document.getElementById("rocket-wrapper").style.display = "block";
@@ -33,7 +34,7 @@ function startGame() {
   gameInterval = setInterval(updateGame, 50);
 }
 
-// Update game state
+// Update game state on interval
 function updateGame() {
   if (!gameActive) return;
   
@@ -60,7 +61,7 @@ function updateRocketPosition() {
   const rocketWrapper = document.getElementById("rocket-wrapper");
   if (rocketWrapper) {
     const containerHeight = rocketContainerHeight; // 500px
-    const rocketHeight = 120; // Approximate height of the rocket-wrapper
+    const rocketHeight = 360; // Height of the rocket-wrapper (3× size)
     let newBottom = (discount / 100) * (containerHeight - rocketHeight);
     rocketWrapper.style.bottom = newBottom + "px";
   }
@@ -72,7 +73,7 @@ function crash() {
   crashed = true;
   clearInterval(gameInterval);
   
-  // Hide the rocket & its effects, show explosion animation
+  // Hide the rocket & its effects; show explosion animation
   document.getElementById("rocket-wrapper").style.display = "none";
   const explosionElem = document.getElementById("explosion");
   explosionElem.style.display = "block";
@@ -80,7 +81,7 @@ function crash() {
   
   document.getElementById("status").textContent = "Crashed! No discount awarded.";
   document.getElementById("cashout").disabled = true;
-  document.getElementById("start").disabled = false;
+  document.getElementById("ignite").disabled = false;
   
   // Remove explosion effect after 2 seconds
   setTimeout(() => {
@@ -89,7 +90,7 @@ function crash() {
   }, 2000);
 }
 
-// Handle cashing out
+// Handle Cash Out (and update balance)
 function cashOut() {
   if (!gameActive || crashed) return;
   
@@ -98,9 +99,18 @@ function cashOut() {
   updateDisplay();
   document.getElementById("status").textContent = "Cashed out at " + discount.toFixed(2) + "% discount!";
   document.getElementById("cashout").disabled = true;
-  document.getElementById("start").disabled = false;
+  document.getElementById("ignite").disabled = false;
+  
+  // Add the discount earned to the accumulated balance
+  balance += discount;
+  updateBalance();
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
+}
+
+// Update the balance display
+function updateBalance() {
+  document.getElementById("balance-display").textContent = "Balance: " + balance.toFixed(2) + "%";
 }
 
 // Generate vertical ruler tick marks for left and right sides
@@ -134,5 +144,5 @@ function generateRulerTicks() {
 window.addEventListener("load", generateRulerTicks);
 
 // Button event listeners
-document.getElementById("start").addEventListener("click", startGame);
+document.getElementById("ignite").addEventListener("click", startGame);
 document.getElementById("cashout").addEventListener("click", cashOut);
