@@ -38,7 +38,7 @@ h1 {
   overflow: hidden;
 }
 
-/* Rocket Wrapper – its center is aligned dynamically */
+/* Rocket Wrapper – its center will be aligned dynamically */
 #rocket-wrapper {
   position: absolute;
   left: 0;
