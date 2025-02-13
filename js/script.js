@@ -1,6 +1,6 @@
 // The dynamic discount starts at 0.01%
 let discount = 0.01;
-// Use a slow rate: 0.2% per second until 5% is reached
+// Use a slower rate: 0.2% per second so the early range lasts much longer
 const discountRate = 0.2;
 let gameInterval;
 let gameActive = false;
@@ -9,11 +9,6 @@ let crashPoint;
 let startTime;
 // Accumulated discount (resets to 0 on crash)
 let accumulatedDiscount = 0;
-
-// Calculate the time (in seconds) when discount reaches 5% linearly.
-const T0 = (5 - 0.01) / discountRate;  // approximately 24.95 seconds
-// Exponential growth constant after reaching 5%
-const k = 0.2; 
 
 /**
  * Global mapping function (piecewise linear) to "stretch" the early range.
@@ -30,12 +25,12 @@ function mapDiscountToNormalized(d) {
 }
 
 /**
- * Update the dynamic bottom tick scale.
- * The scale shows tick marks for the current window:
+ * Update the bottom tick scale.
+ * The scale is dynamic—it shows only the tick marks for the current window:
  * - If discount < 2: window = [0.01, 2.00].
  * - If discount >= 2: window = [discount*0.8, discount*1.2] (clamped to [2.00, 100.00]).
  * Tick marks are drawn linearly across the container width.
- * The red marker is positioned at the rocket's center X.
+ * The red marker is positioned at the rocket's center (it stays with the rocket).
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
@@ -89,7 +84,7 @@ function updateBottomScale() {
  * It uses the same dynamic window as the bottom scale.
  * Tick marks and labels are drawn linearly across the container height,
  * and the red marker is positioned at the rocket's center Y.
- * The vertical tick marks are made a bit smaller.
+ * The vertical tick marks are made smaller.
  */
 function updateVerticalTicker() {
   const verticalTicker = document.getElementById("vertical-ticker");
@@ -111,7 +106,6 @@ function updateVerticalTicker() {
   for (let i = 0; i <= tickCount; i++) {
     let value = windowMin + ((windowMax - windowMin) / tickCount) * i;
     let normalizedTick = (value - windowMin) / (windowMax - windowMin);
-    // For vertical ticker, 0 corresponds to bottom and 1 to top.
     let topPos = (1 - normalizedTick) * containerHeight;
     
     const tick = document.createElement("div");
@@ -141,9 +135,8 @@ function updateVerticalTicker() {
 
 /**
  * Update the rocket's position.
- * - Vertical position uses the global mapping.
- * - Horizontal position uses the dynamic window mapping so that the rocket's center aligns with the red marker.
- * - Once the rocket reaches the center vertically, it stays fixed there.
+ * - Until discount reaches 1%, the rocket moves normally (using dynamic window mapping).
+ * - Once discount ≥ 1%, the rocket stops moving and remains fixed at the center.
  */
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
@@ -153,34 +146,33 @@ function updateRocketPosition() {
   const wrapperWidth = rocketWrapper.offsetWidth;
   const wrapperHeight = rocketWrapper.offsetHeight;
   
-  // Vertical (y-axis) using global mapping.
-  let normalizedVert = mapDiscountToNormalized(discount);
-  let newBottom = normalizedVert * (containerHeight - wrapperHeight);
-  
-  // Horizontal (x-axis) using dynamic window mapping.
-  let windowMin, windowMax;
-  if (discount < 2.00) {
-    windowMin = 0.01;
-    windowMax = 2.00;
-  } else {
-    windowMin = discount * 0.8;
-    windowMax = discount * 1.2;
-    if (windowMin < 2.00) windowMin = 2.00;
-    if (windowMax > 100.00) windowMax = 100.00;
-  }
-  let normalizedHoriz = (discount - windowMin) / (windowMax - windowMin);
-  let markerPos = normalizedHoriz * containerWidth;
-  let newLeft = markerPos - wrapperWidth / 2;
-  newLeft = Math.max(0, Math.min(newLeft, containerWidth - wrapperWidth));
-  
-  // For vertical: if normalizedVert >= 0.5, fix at center.
-  if (normalizedVert >= 0.5) {
-    let centerY = (containerHeight - wrapperHeight) / 2;
-    rocketWrapper.style.bottom = centerY + "px";
-  } else {
+  if (discount < 1.0) {
+    // Before 1%, use dynamic mapping.
+    let windowMin, windowMax;
+    if (discount < 2.00) {
+      windowMin = 0.01;
+      windowMax = 2.00;
+    } else {
+      windowMin = discount * 0.8;
+      windowMax = discount * 1.2;
+      if (windowMin < 2.00) windowMin = 2.00;
+      if (windowMax > 100.00) windowMax = 100.00;
+    }
+    let normalizedVert = mapDiscountToNormalized(discount);
+    let newBottom = normalizedVert * (containerHeight - wrapperHeight);
+    let normalizedHoriz = (discount - windowMin) / (windowMax - windowMin);
+    let markerPos = normalizedHoriz * containerWidth;
+    let newLeft = markerPos - wrapperWidth / 2;
+    newLeft = Math.max(0, Math.min(newLeft, containerWidth - wrapperWidth));
+    rocketWrapper.style.left = newLeft + "px";
     rocketWrapper.style.bottom = newBottom + "px";
+  } else {
+    // Once discount ≥ 1%, fix the rocket at the center.
+    let centerX = (containerWidth - wrapperWidth) / 2;
+    let centerY = (containerHeight - wrapperHeight) / 2;
+    rocketWrapper.style.left = centerX + "px";
+    rocketWrapper.style.bottom = centerY + "px";
   }
-  rocketWrapper.style.left = newLeft + "px";
 }
 
 /**
@@ -194,8 +186,11 @@ function updateDisplay() {
  * Start (Ignite) the game.
  * - Resets discount to 0.01%.
  * - Disables the ignite button during a run.
- * - Determines a crash point with weighted probabilities.
- * - The run only starts when the player clicks Ignite.
+ * - Determines a crash point with weighted probabilities:
+ *    • 10% chance: crash between 0.01% and 0.05%.
+ *    • 80% chance: crash between 1.00% and 3.00%.
+ *    • 10% chance: crash between 3.00% and 100.00%.
+ * - Runs only when the player clicks Ignite.
  */
 function startGame() {
   if (gameActive) return;
@@ -231,17 +226,15 @@ function startGame() {
 
 /**
  * Update game state on each tick.
+ * Now, once the discount reaches 1%, the rocket stops moving (stays centered)
+ * while the discount value continues to increase (and tick bars update).
+ * Additionally, once Cash Out is hit, the final discount is displayed in green above the rocket.
  */
 function updateGame() {
   if (!gameActive) return;
   
   let elapsed = (Date.now() - startTime) / 1000;
-  // Use linear growth until discount reaches 5%, then exponential.
-  if (elapsed <= (5 - 0.01) / discountRate) {
-    discount = 0.01 + elapsed * discountRate;
-  } else {
-    discount = 5 * Math.exp(k * (elapsed - (5 - 0.01) / discountRate));
-  }
+  discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
   
   updateDisplay();
@@ -285,6 +278,7 @@ function crash() {
 /**
  * Handle Cash Out.
  * - Locks in the current discount (adds it to accumulatedDiscount).
+ * - Displays the final discount above the rocket in green.
  * - The run ends; the player must click Ignite for a new run.
  */
 function cashOut() {
@@ -299,6 +293,9 @@ function cashOut() {
   
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
+  
+  // Change discount display color to green for cash out.
+  document.getElementById("ship-discount").style.color = "green";
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
 }
