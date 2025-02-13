@@ -1,17 +1,17 @@
 // The dynamic discount value now starts at 0.01%
 let discount = 0.01;
-// Use a slower rate so that the early range lasts longer: 0.5% per second
-const discountRate = 0.5;
+// Use a slower rate: 0.2% per second so the early range lasts much longer
+const discountRate = 0.2;
 let gameInterval;
 let gameActive = false;
 let crashed = false;
 let crashPoint;
 let startTime;
-// Accumulated (locked-in) discount from cash outs
+// Accumulated (locked-in) discount from cash outs (which resets on crash)
 let accumulatedDiscount = 0;
 
 /**
- * Mapping function that uses a piecewise linear transform to "stretch" the 0.01%-2.00% range.
+ * Mapping function (piecewise linear) to "stretch" the 0.01%-2.00% range.
  * For discount <= 2.00: normalized = ((d - 0.01) / (2.00 - 0.01)) * 0.3.
  * For discount > 2.00: normalized = 0.3 + ((d - 2.00) / (100.00 - 2.00)) * 0.7.
  */
@@ -24,19 +24,17 @@ function mapDiscountToNormalized(d) {
 }
 
 /**
- * Dynamic Bottom Scale:
- * Always shows tick marks for the full range [0.01, 100].
- * The tick labels are highlighted (enlarged) if they are closest to the current discount.
+ * Update the bottom tick scale.
+ * The tick marks for fixed tick values (0.01, 0.1, 0.5, 1, 2, 3, 5, 10, 20, 50, 100)
+ * are drawn using the same mapping function so that their positions align with the rocket.
+ * The label closest to the current discount is highlighted.
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = ""; // Clear existing tick marks.
   const containerWidth = document.getElementById("rocket-container").offsetWidth;
   
-  // Define a set of tick values for the full range
   const tickValues = [0.01, 0.1, 0.5, 1, 2, 3, 5, 10, 20, 50, 100];
-  
-  // Compute current normalized discount using our mapping function
   const currentNorm = mapDiscountToNormalized(discount);
   
   tickValues.forEach(value => {
@@ -54,16 +52,27 @@ function updateBottomScale() {
     label.className = "tick-label";
     label.textContent = value.toFixed(2) + "%";
     label.style.left = (leftPos - 10) + "px";
-    // Highlight the label if it's within 0.05 of the current normalized discount
-    if (Math.abs(tickNorm - currentNorm) < 0.05) {
+    if (Math.abs(tickNorm - currentNorm) < 0.03) { // highlight if close to current discount
       label.classList.add("highlight");
     }
     bottomScale.appendChild(label);
   });
 }
 
-// Start (Ignite) the game and reset state
+/**
+ * Start (Ignite) the game.
+ * – Resets discount to 0.01%
+ * – Disables ignite button during a run
+ * – Updates display and rocket position
+ * – Determines a crash point using weighted probabilities:
+ *    • 10% chance: crash point in [0.01, 0.05]
+ *    • 80% chance: crash point in [1.00, 3.00]
+ *    • 10% chance: crash point in [3.00, 100.00]
+ * – Runs the game continuously.
+ */
 function startGame() {
+  if (gameActive) return; // prevent igniting if already running
+  
   discount = 0.01;
   crashed = false;
   gameActive = true;
@@ -72,30 +81,35 @@ function startGame() {
   document.getElementById("status").textContent = "Game in progress... Press Cash Out anytime!";
   document.getElementById("cashout").disabled = false;
   document.getElementById("ignite").disabled = true;
-
-  // Reset displays: show rocket-wrapper and hide explosion
+  
+  // Show rocket and hide explosion
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
-
-  // Reset rocket position (starts at bottom left)
+  
+  // Reset rocket position and update tick bar
   updateRocketPosition();
   updateBottomScale();
-
-  // Determine crash point using weighted probability:
-  // 80% chance: uniformly between 1.00% and 3.00%
-  // 20% chance: uniformly between 3.00% and 100.00%
+  
+  // Determine crash point with weighted probability:
   let r = Math.random();
-  if (r < 0.8) {
+  if (r < 0.1) {
+    // 10% chance: crash between 0.01% and 0.05%
+    crashPoint = Math.random() * (0.05 - 0.01) + 0.01;
+  } else if (r < 0.9) {
+    // 80% chance: crash between 1.00% and 3.00%
     crashPoint = Math.random() * (3.00 - 1.00) + 1.00;
   } else {
+    // 10% chance: crash between 3.00% and 100.00%
     crashPoint = Math.random() * (100.00 - 3.00) + 3.00;
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
-
+  
   gameInterval = setInterval(updateGame, 50);
 }
 
-// Update game state on interval
+/**
+ * Update game state on each interval tick.
+ */
 function updateGame() {
   if (!gameActive) return;
   
@@ -107,47 +121,67 @@ function updateGame() {
   updateRocketPosition();
   updateBottomScale();
   
-  // Crash if discount reaches or exceeds crash point
+  // Crash if discount reaches/exceeds the crash point
   if (discount >= crashPoint) {
     crash();
   }
 }
 
-// Update the real-time discount display (above the rocket)
+/**
+ * Update the real-time discount display (above the rocket).
+ */
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
 }
 
-// Update rocket position both vertically and horizontally based on discount progress
+/**
+ * Update the rocket's position based on the custom mapping.
+ * We now center the rocket wrapper so that its center aligns with the mapped value.
+ */
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const containerHeight = container.offsetHeight;
-  const wrapperHeight = rocketWrapper.offsetHeight;
   const containerWidth = container.offsetWidth;
   const wrapperWidth = rocketWrapper.offsetWidth;
+  const wrapperHeight = rocketWrapper.offsetHeight;
   
-  // Use our custom mapping function to get a normalized value [0,1]
+  // Get normalized value from our mapping function
   let normalized = mapDiscountToNormalized(discount);
   if (normalized < 0) normalized = 0;
   if (normalized > 1) normalized = 1;
   
-  // Vertical position: when normalized=0, bottom = 0; when normalized=1, bottom = containerHeight - wrapperHeight
-  let newBottom = normalized * (containerHeight - wrapperHeight);
-  rocketWrapper.style.bottom = newBottom + "px";
+  // Center the rocket's wrapper:
+  let newLeft = normalized * containerWidth - wrapperWidth / 2;
+  let newBottom = normalized * containerHeight - wrapperHeight / 2;
   
-  // Horizontal position: when normalized=0, left = 0; when normalized=1, left = containerWidth - wrapperWidth
-  let newLeft = normalized * (containerWidth - wrapperWidth);
+  // Clamp positions so that the rocket stays within the container:
+  if (newLeft < 0) newLeft = 0;
+  if (newLeft > containerWidth - wrapperWidth) newLeft = containerWidth - wrapperWidth;
+  if (newBottom < 0) newBottom = 0;
+  if (newBottom > containerHeight - wrapperHeight) newBottom = containerHeight - wrapperHeight;
+  
   rocketWrapper.style.left = newLeft + "px";
+  rocketWrapper.style.bottom = newBottom + "px";
 }
 
-// Handle rocket crash
+/**
+ * Handle rocket crash.
+ * – Stops the game.
+ * – Resets the accumulated discount to 0 (loss).
+ * – Shows the explosion graphic.
+ * – Automatically starts a new run after 2 seconds.
+ */
 function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
   
-  // Hide the rocket and show explosion at the same position
+  // Lose total accumulated discount
+  accumulatedDiscount = 0;
+  updateAccumulatedDiscount();
+  
+  // Hide rocket and show explosion at same position
   const rocketWrapper = document.getElementById("rocket-wrapper");
   rocketWrapper.style.display = "none";
   const explosionElem = document.getElementById("explosion");
@@ -156,18 +190,19 @@ function crash() {
   explosionElem.style.display = "block";
   explosionElem.classList.add("explode");
   
-  document.getElementById("status").textContent = "Crashed! No discount awarded.";
+  document.getElementById("status").textContent = "Crashed! You lost your total discount.";
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = false;
   
-  // Remove explosion effect after 2 seconds
-  setTimeout(() => {
-    explosionElem.style.display = "none";
-    explosionElem.classList.remove("explode");
-  }, 2000);
+  // After 2 seconds, auto-start a new run
+  setTimeout(startGame, 2000);
 }
 
-// Handle Cash Out (and update accumulated discount)
+/**
+ * Handle Cash Out.
+ * – Locks in the current discount (adds it to accumulatedDiscount).
+ * – Continues the game continuously.
+ */
 function cashOut() {
   if (!gameActive || crashed) return;
   
@@ -178,22 +213,26 @@ function cashOut() {
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = false;
   
-  // Add the earned discount to the accumulated discount
+  // Add the current discount to the accumulated discount
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
+  
+  // Automatically start a new run after 2 seconds
+  setTimeout(startGame, 2000);
 }
 
-// Update the accumulated discount display (renamed from "Balance")
+/**
+ * Update the accumulated discount display.
+ */
 function updateAccumulatedDiscount() {
   document.getElementById("discount-display").textContent = "Discount: " + accumulatedDiscount.toFixed(2) + "%";
 }
 
-// Regenerate bottom scale on window resize (using current discount)
+// Ensure the bottom scale updates on window resize.
 window.addEventListener("resize", updateBottomScale);
-
-// Initialize bottom scale on page load
+// Initialize bottom scale on page load.
 window.addEventListener("load", updateBottomScale);
 
 // Button event listeners
