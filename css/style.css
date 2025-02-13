@@ -25,7 +25,7 @@ h1 {
   position: relative;
 }
 
-/* Rocket Container with space2.jpg background */
+/* Rocket Container with background space2.jpg */
 #rocket-container {
   position: relative;
   width: 100%;
@@ -50,14 +50,14 @@ h1 {
 /* Rocket Image */
 #rocket {
   position: absolute;
-  bottom: 50px; /* Leaves space for discount display */
+  bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
   width: 100px;
   z-index: 3;
 }
 
-/* Discount Display above Rocket */
+/* Real-time Discount Display (above the rocket) */
 #ship-discount {
   position: absolute;
   bottom: 90%;
@@ -87,7 +87,7 @@ h1 {
   border-top: 1px solid #fff;
 }
 
-/* Tick marks */
+/* Tick marks for bottom bar */
 .tick {
   position: absolute;
   bottom: 0;
@@ -96,7 +96,7 @@ h1 {
   background: #fff;
 }
 
-/* Tick labels */
+/* Tick labels for bottom bar */
 .tick-label {
   position: absolute;
   bottom: 10px;
@@ -110,7 +110,7 @@ h1 {
   font-weight: bold;
 }
 
-/* Red marker for bottom tick bar */
+/* Red marker for bottom bar */
 .tick-marker {
   position: absolute;
   bottom: 0;
@@ -155,7 +155,7 @@ h1 {
   background: red;
 }
 
-/* Current Run Discount Display (bottom right) */
+/* Current Run Discount (bottom right) */
 #current-discount {
   position: absolute;
   bottom: 10px;
@@ -166,7 +166,7 @@ h1 {
   border-radius: 4px;
 }
 
-/* Total Discount Display (bottom left) */
+/* Total Discount (bottom left) */
 #discount-display {
   position: absolute;
   bottom: 10px;
