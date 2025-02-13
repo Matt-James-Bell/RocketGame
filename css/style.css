@@ -38,9 +38,10 @@ h1 {
   overflow: hidden;
 }
 
-/* Rocket Wrapper – will be positioned diagonally (from bottom left to top right) */
+/* Rocket Wrapper – will move diagonally from bottom left to top right */
 #rocket-wrapper {
   position: absolute;
+  /* Starts at bottom left */
   bottom: 0;
   left: 0;
   width: 150px;
@@ -50,21 +51,21 @@ h1 {
 /* Rocket Image */
 #rocket {
   position: absolute;
-  bottom: 50px; /* Leaves space for the discount display */
+  /* Leave space above for the discount display */
+  bottom: 50px;
   left: 0;
   width: 100px;
   z-index: 3;
 }
 
-/* Real-time Discount Display (shown just under the rocket) */
+/* Real-time Discount Display (now displayed above the rocket) */
 #ship-discount {
   position: absolute;
-  top: 100%; /* Directly beneath the rocket */
-  left: 0;
-  width: 100%;
-  text-align: center;
+  bottom: 100%;  /* Place above the rocket image */
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 1em;
-  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 /* Explosion Image */
