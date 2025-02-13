@@ -1,7 +1,7 @@
-// Current dynamic discount value starts at 0.01%
+// The dynamic discount value now starts at 0.01%
 let discount = 0.01;
-// Increase rate: 5% per second for visible movement
-const discountRate = 5.0;
+// We'll use a slower rate so that the early range lasts longer (1% per second)
+const discountRate = 1.0;
 let gameInterval;
 let gameActive = false;
 let crashed = false;
@@ -9,6 +9,20 @@ let crashPoint;
 let startTime;
 // Accumulated (locked-in) discount from cash outs
 let accumulatedDiscount = 0;
+
+/**
+ * Mapping function: maps a discount value (0.01% to 100%) to a normalized value [0,1]
+ * using a piecewise linear function that stretches out the 0.01%-2.00% range.
+ * For discount <= 2.00, normalized = (discount - 0.01) / (2 - 0.01) * 0.3.
+ * For discount > 2.00, normalized = 0.3 + (discount - 2) / (100 - 2) * 0.7.
+ */
+function mapDiscountToNormalized(disc) {
+  if (disc <= 2.00) {
+    return ((disc - 0.01) / (2.00 - 0.01)) * 0.3;
+  } else {
+    return 0.3 + ((disc - 2.00) / (100.00 - 2.00)) * 0.7;
+  }
+}
 
 // Start (Ignite) the game and reset state
 function startGame() {
@@ -53,7 +67,7 @@ function updateGame() {
   updateDisplay();
   updateRocketPosition();
   
-  // Crash if discount reaches/exceeds crash point
+  // Crash if discount reaches or exceeds crash point
   if (discount >= crashPoint) {
     crash();
   }
@@ -73,10 +87,8 @@ function updateRocketPosition() {
   const containerWidth = container.offsetWidth;
   const wrapperWidth = rocketWrapper.offsetWidth;
   
-  // Normalize discount so that 0.01% corresponds to 0 and 100% corresponds to 1
-  let normalized = (discount - 0.01) / (100 - 0.01);
-  if(normalized < 0) normalized = 0;
-  if(normalized > 1) normalized = 1;
+  // Get normalized value using our custom mapping function
+  let normalized = mapDiscountToNormalized(discount);
   
   // Vertical position: when normalized=0, bottom = 0; when normalized=1, bottom = containerHeight - wrapperHeight
   let newBottom = normalized * (containerHeight - wrapperHeight);
@@ -136,19 +148,18 @@ function updateAccumulatedDiscount() {
   document.getElementById("discount-display").textContent = "Discount: " + accumulatedDiscount.toFixed(2) + "%";
 }
 
-// Generate horizontal tick marks for the bottom scale from 0.01% to 100.00%
+// Generate horizontal tick marks for the bottom scale using our custom mapping
+// We'll use a custom set of tick values to "zoom" the lower range:
 function generateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = ""; // Clear any existing marks
   const containerWidth = document.getElementById("rocket-container").offsetWidth;
   
-  const startValue = 0.01;
-  const endValue = 100.00;
-  const tickCount = 10; // We'll create 11 tick marks
+  // Define tick values (in percent) to show a zoomed view of the lower range
+  const tickValues = [0.01, 0.5, 1.0, 1.5, 2.0, 5.0, 10.0, 20.0, 50.0, 100.00];
   
-  for (let i = 0; i <= tickCount; i++) {
-    let value = startValue + ((endValue - startValue) / tickCount) * i;
-    let normalizedTick = i / tickCount; // Goes from 0 to 1
+  tickValues.forEach(value => {
+    let normalizedTick = mapDiscountToNormalized(value);
     let leftPos = normalizedTick * containerWidth;
     
     let tick = document.createElement("div");
@@ -161,7 +172,7 @@ function generateBottomScale() {
     label.textContent = value.toFixed(2) + "%";
     label.style.left = (leftPos - 10) + "px";
     bottomScale.appendChild(label);
-  }
+  });
 }
 
 // Regenerate bottom scale on window resize
