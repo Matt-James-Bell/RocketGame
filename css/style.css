@@ -29,7 +29,7 @@ h1 {
 #rocket-container {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 600px; /* Increased vertical space */
   margin-bottom: 20px;
   background: url('../img/space.jpg') no-repeat center center;
   background-size: cover;
@@ -38,52 +38,52 @@ h1 {
   overflow: hidden;
 }
 
-/* Rocket Wrapper – the moving container for the ship and its effects */
+/* Rocket Wrapper – moves vertically from the bottom upward */
 #rocket-wrapper {
   position: absolute;
-  top: 50%;
-  left: 0;  /* will be updated in JS */
-  transform: translateY(-50%);
-  width: 180px;   /* enough width to include ship plus flame */
-  height: 150px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 200px;
 }
 
-/* Rocket Image (ship) – assume it's drawn facing right */
+/* Rocket Image (ship) */
 #rocket {
   position: absolute;
-  left: 20px;  /* leave space at left for the flame */
-  top: 50%;
-  transform: translateY(-50%);
-  width: 150px;
+  bottom: 50px; /* leave space for the flame */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
   z-index: 3;
 }
 
-/* Flame Image – attached to the tail (left side) of the ship */
+/* Flame Image – attached to the bottom (tail) of the rocket */
 #flame {
   position: absolute;
-  left: -50px;  /* positioned immediately to the left of the rocket */
-  top: 50%;
-  transform: translateY(-50%);
-  width: 50px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px; /* same width as the rocket */
   z-index: 2;
   animation: flicker 0.2s infinite;
 }
 
-/* Smoke Image – trailing behind the flame */
+/* Smoke Image – trailing below the flame */
 #smoke {
   position: absolute;
-  left: -60px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 60px;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
   z-index: 1;
   animation: drift 1s infinite;
 }
 
-/* Real-time Discount Display (under the ship) */
+/* Real-time Discount Display – positioned just below the rocket */
 #ship-discount {
   position: absolute;
-  top: 100%;  /* directly below the rocket-wrapper content */
+  top: 100%; /* directly below the rocket wrapper */
   left: 50%;
   transform: translateX(-50%);
   font-size: 1em;
@@ -94,24 +94,50 @@ h1 {
 /* Explosion Image */
 #explosion {
   position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  width: 180px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
   display: none;
   z-index: 4;
 }
 
+/* Bottom Scale (horizontal ruler) */
+#bottom-scale {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  border-top: 1px solid #fff;
+}
+
+/* Tick marks for the bottom scale */
+.tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 10px;
+  background: #fff;
+}
+
+.tick-label {
+  position: absolute;
+  bottom: 10px;
+  font-size: 10px;
+  color: #fff;
+}
+
 /* Keyframes for flame flicker */
 @keyframes flicker {
-  0%, 100% { opacity: 0.8; transform: translateY(-50%) scale(1); }
-  50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+  0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
 }
 
 /* Keyframes for smoke drift */
 @keyframes drift {
-  0% { opacity: 0.6; transform: translateY(-50%) translateX(0px); }
-  100% { opacity: 0; transform: translateY(-50%) translateX(-20px); }
+  0% { opacity: 0.6; transform: translateX(-50%) translateY(0px); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
 }
 
 /* Explosion Animation */
@@ -119,8 +145,8 @@ h1 {
   animation: explosion 0.5s ease-out;
 }
 @keyframes explosion {
-  0% { transform: translateY(-50%) scale(0.5); opacity: 1; }
-  100% { transform: translateY(-50%) scale(1.5); opacity: 0; }
+  0% { transform: translateX(-50%) scale(0.5); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1.5); opacity: 0; }
 }
 
 /* Status Display */
