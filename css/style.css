@@ -38,11 +38,12 @@ h1 {
   overflow: hidden;
 }
 
-/* Rocket Wrapper – moves diagonally from bottom left to top right */
+/* Rocket Wrapper – its center will follow our mapping */
 #rocket-wrapper {
   position: absolute;
-  bottom: 0;
+  /* We start it at bottom left; its center will be aligned dynamically */
   left: 0;
+  bottom: 0;
   width: 150px;
   height: 200px;
 }
@@ -50,8 +51,10 @@ h1 {
 /* Rocket Image */
 #rocket {
   position: absolute;
-  bottom: 50px; /* Leaves space for the discount display */
-  left: 0;
+  /* Position within wrapper (we leave space above for discount display) */
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100px;
   z-index: 3;
 }
@@ -69,8 +72,8 @@ h1 {
 /* Explosion Image */
 #explosion {
   position: absolute;
-  bottom: 0;
   left: 0;
+  bottom: 0;
   width: 150px;
   display: none;
   z-index: 4;
