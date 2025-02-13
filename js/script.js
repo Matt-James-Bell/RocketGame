@@ -16,11 +16,17 @@ function startGame() {
   document.getElementById("cashout").disabled = false;
   document.getElementById("start").disabled = true;
 
+  // Reset rocket position
+  const rocketElem = document.getElementById("rocket");
+  if (rocketElem) {
+    rocketElem.style.bottom = "0px";
+  }
+
   // Set a random crash point between 3.0x and 10.0x
   crashPoint = Math.random() * (10 - 3) + 3;
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "x");
 
-  // Update the multiplier every 50ms
+  // Update the multiplier (and rocket position) every 50ms
   gameInterval = setInterval(updateGame, 50);
 }
 
@@ -31,6 +37,21 @@ function updateGame() {
   let elapsed = (Date.now() - startTime) / 1000;
   multiplier = 1 + elapsed * 0.5;
   document.getElementById("multiplier").textContent = multiplier.toFixed(2) + "x";
+  
+  // Update rocket position: move upward as multiplier increases
+  const rocketElem = document.getElementById("rocket");
+  if (rocketElem) {
+    // For every 1x increase (above 1), move rocket up by 50px.
+    let newBottom = (multiplier - 1) * 50;
+    
+    // Clamp the rocket's position within the rocket container height.
+    const containerHeight = 300; // Must match #rocket-container height in CSS
+    const rocketHeight = 50;     // Must match #rocket width/height in CSS
+    if(newBottom > containerHeight - rocketHeight) {
+      newBottom = containerHeight - rocketHeight;
+    }
+    rocketElem.style.bottom = newBottom + "px";
+  }
   
   // Crash if multiplier meets or exceeds the crash point
   if (multiplier >= crashPoint) {
