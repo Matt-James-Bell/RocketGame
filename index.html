@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Rocket Discount Game</title>
-  <!-- Use a clean, readable font -->
+  <!-- Using a clean, readable font -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,34 +11,31 @@
   <div id="game-container">
     <h1>Rocket Discount Game</h1>
     
-    <!-- Rocket Container with space background and vertical rulers -->
+    <!-- Rocket Container with a space background -->
     <div id="rocket-container">
-      <!-- Left Ruler -->
-      <div id="left-ruler"></div>
-      
-      <!-- Rocket Wrapper: Contains rocket, flame & smoke -->
+      <!-- The moving rocket wrapper (ship plus attached flame/smoke and discount display) -->
       <div id="rocket-wrapper">
-        <img id="rocket" src="img/rocket.png" alt="Rocket">
+        <!-- Flame (attached to the tail) -->
         <img id="flame" src="img/flame.png" alt="Flame">
+        <!-- Smoke trail (behind the flame) -->
         <img id="smoke" src="img/smoke.png" alt="Smoke">
+        <!-- Rocket image -->
+        <img id="rocket" src="img/rocket.png" alt="Rocket">
+        <!-- Real-time discount display (shown right under the ship) -->
+        <div id="ship-discount">0.00% Discount</div>
       </div>
       
-      <!-- Right Ruler -->
-      <div id="right-ruler"></div>
-      
-      <!-- Explosion image (hidden by default) -->
+      <!-- Explosion (hidden by default) -->
       <img id="explosion" src="img/explosion.png" alt="Explosion">
     </div>
     
-    <!-- Current discount display -->
-    <div id="discount-display">0.01% Discount</div>
     <div id="status">Press "Ignite" to begin!</div>
     
-    <!-- Buttons: Ignite (red) and Cash Out (green) -->
+    <!-- Buttons -->
     <button id="ignite">Ignite</button>
     <button id="cashout" disabled>Cash Out</button>
     
-    <!-- Balance Display at bottom left -->
+    <!-- Balance Display -->
     <div id="balance-display">Balance: 0.00%</div>
   </div>
   <script src="js/script.js"></script>
