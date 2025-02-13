@@ -1,17 +1,20 @@
-// Initial discount starts at 0.01%
+// The dynamic discount starts at 0.01%
 let discount = 0.01;
-// Linear growth rate: 0.2% per second
+// Use a slower rate: 0.2% per second for the early range
 const discountRate = 0.2;
 let gameInterval;
 let gameActive = false;
 let crashed = false;
 let crashPoint;
 let startTime;
-// Total accumulated discount from runs
+// Accumulated discount (winnings from previous runs)
 let accumulatedDiscount = 0;
 
 /**
- * Global mapping for vertical position (stretches early values).
+ * Global mapping function (piecewise linear) to "stretch" the early range.
+ * For d <= 2.00: normalized = ((d - 0.01) / (2.00 - 0.01)) * 0.3.
+ * For d > 2.00: normalized = 0.3 + ((d - 2.00) / (100.00 - 2.00)) * 0.7.
+ * (Used for vertical positioning.)
  */
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -22,7 +25,11 @@ function mapDiscountToNormalized(d) {
 }
 
 /**
- * Update bottom tick bar.
+ * Update the bottom tick scale (horizontal).
+ * Displays tick marks for the current dynamic window:
+ * - If discount < 2: window = [0.01, 2.00].
+ * - If discount >= 2: window = [discount*0.8, discount*1.2] (clamped to [2.00, 100.00]).
+ * Tick labels move dynamically; the red marker stays aligned with the rocket's center.
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
@@ -58,7 +65,7 @@ function updateBottomScale() {
     bottomScale.appendChild(label);
   }
   
-  // Red marker aligned with rocket center.
+  // Place the red marker at the rocket's center X.
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const container = document.getElementById("rocket-container");
   const rocketRect = rocketWrapper.getBoundingClientRect();
@@ -72,7 +79,10 @@ function updateBottomScale() {
 }
 
 /**
- * Update vertical ticker.
+ * Update the vertical ticker (right side).
+ * Uses the same dynamic window as the bottom scale.
+ * Draws tick marks and labels along the container height,
+ * and positions a red marker at the rocket's center Y.
  */
 function updateVerticalTicker() {
   const verticalTicker = document.getElementById("vertical-ticker");
@@ -108,7 +118,7 @@ function updateVerticalTicker() {
     verticalTicker.appendChild(label);
   }
   
-  // Red marker aligned with rocket center Y.
+  // Place the red marker at the rocket's center Y.
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const container = document.getElementById("rocket-container");
   const rocketRect = rocketWrapper.getBoundingClientRect();
@@ -122,8 +132,9 @@ function updateVerticalTicker() {
 }
 
 /**
- * Update rocket position.
- * Before 1%, moves normally; at 1% or more, fixed at center.
+ * Update the rocket's position.
+ * - Before discount reaches 1%, the rocket moves using dynamic window mapping.
+ * - Once discount ≥ 1%, the rocket remains fixed at the center.
  */
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
@@ -161,7 +172,8 @@ function updateRocketPosition() {
 }
 
 /**
- * Update display (above rocket and current run box).
+ * Update the real-time discount display (above the rocket)
+ * and the current run's discount (bottom right).
  */
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
@@ -169,7 +181,7 @@ function updateDisplay() {
 }
 
 /**
- * Start the run when Ignite is clicked.
+ * Start a new run when the player clicks Ignite.
  */
 function startGame() {
   discount = 0.01;
@@ -202,7 +214,7 @@ function startGame() {
 }
 
 /**
- * Update game state.
+ * Update game state on each tick.
  */
 function updateGame() {
   if (!gameActive) return;
@@ -263,7 +275,7 @@ function cashOut() {
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
   
-  // Change discount display above rocket to green.
+  // Change the discount display above the rocket to green.
   document.getElementById("ship-discount").style.color = "green";
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
@@ -272,7 +284,7 @@ function cashOut() {
 }
 
 /**
- * Update Total Discount display.
+ * Update the accumulated discount display.
  */
 function updateAccumulatedDiscount() {
   document.getElementById("discount-display").textContent = "Total Discount: " + accumulatedDiscount.toFixed(2) + "%";
