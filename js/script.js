@@ -1,11 +1,14 @@
+// Current dynamic discount value starts at 0.01%
 let discount = 0.01;
-const discountRate = 5.0; // 5% per second for visible movement
+// Increase rate: 5% per second for visible movement
+const discountRate = 5.0;
 let gameInterval;
 let gameActive = false;
 let crashed = false;
 let crashPoint;
 let startTime;
-let balance = 0; // Accumulated discount balance
+// Accumulated (locked-in) discount from cash outs
+let accumulatedDiscount = 0;
 
 // Start (Ignite) the game and reset state
 function startGame() {
@@ -50,13 +53,13 @@ function updateGame() {
   updateDisplay();
   updateRocketPosition();
   
-  // Crash if discount reaches or exceeds crash point
+  // Crash if discount reaches/exceeds crash point
   if (discount >= crashPoint) {
     crash();
   }
 }
 
-// Update the real-time discount display above the rocket
+// Update the real-time discount display (above the rocket)
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
 }
@@ -110,7 +113,7 @@ function crash() {
   }, 2000);
 }
 
-// Handle Cash Out (and update balance)
+// Handle Cash Out (and update accumulated discount)
 function cashOut() {
   if (!gameActive || crashed) return;
   
@@ -121,16 +124,16 @@ function cashOut() {
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = false;
   
-  // Add the earned discount to the accumulated balance
-  balance += discount;
-  updateBalance();
+  // Add the earned discount to the accumulated discount
+  accumulatedDiscount += discount;
+  updateAccumulatedDiscount();
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
 }
 
-// Update the balance display
-function updateBalance() {
-  document.getElementById("balance-display").textContent = "Balance: " + balance.toFixed(2) + "%";
+// Update the accumulated discount display (renamed from "Balance")
+function updateAccumulatedDiscount() {
+  document.getElementById("discount-display").textContent = "Discount: " + accumulatedDiscount.toFixed(2) + "%";
 }
 
 // Generate horizontal tick marks for the bottom scale from 0.01% to 100.00%
