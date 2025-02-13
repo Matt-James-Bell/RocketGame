@@ -25,14 +25,14 @@ function startGame() {
   // Reset rocket position (starts at bottom left)
   updateRocketPosition();
 
-  // Determine crash point with weighted probability:
-  // 5/6 chance to choose a crash point uniformly between 0.01% and 2.00%
-  // 1/6 chance to choose a crash point uniformly between 2.00% and 100%
+  // Determine crash point using weighted probability:
+  // 5/6 chance: uniformly between 0.01% and 2.00%
+  // 1/6 chance: uniformly between 2.00% and 100.00%
   let r = Math.random();
   if (r < 5/6) {
     crashPoint = Math.random() * (2.00 - 0.01) + 0.01;
   } else {
-    crashPoint = Math.random() * (100 - 2.00) + 2.00;
+    crashPoint = Math.random() * (100.00 - 2.00) + 2.00;
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
 
@@ -50,13 +50,13 @@ function updateGame() {
   updateDisplay();
   updateRocketPosition();
   
-  // Crash if discount reaches/exceeds crash point
+  // Crash if discount reaches or exceeds crash point
   if (discount >= crashPoint) {
     crash();
   }
 }
 
-// Update the real-time discount display
+// Update the real-time discount display above the rocket
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
 }
@@ -65,21 +65,23 @@ function updateDisplay() {
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
   const rocketWrapper = document.getElementById("rocket-wrapper");
-  
-  // Vertical movement: when discount=0, bottom = 0; when discount=100, bottom = containerHeight - wrapperHeight
   const containerHeight = container.offsetHeight;
   const wrapperHeight = rocketWrapper.offsetHeight;
-  let newBottom = (discount / 100) * (containerHeight - wrapperHeight);
-  rocketWrapper.style.bottom = newBottom + "px";
-  
-  // Horizontal movement: when discount=0, left = 0; when discount=100, left = containerWidth - wrapperWidth
   const containerWidth = container.offsetWidth;
   const wrapperWidth = rocketWrapper.offsetWidth;
-  let newLeft = (discount / 100) * (containerWidth - wrapperWidth);
-  rocketWrapper.style.left = newLeft + "px";
   
-  // (Optional) Uncomment for debugging:
-  // console.log(`Discount: ${discount.toFixed(2)}%, newBottom: ${newBottom}px, newLeft: ${newLeft}px`);
+  // Normalize discount so that 0.01% corresponds to 0 and 100% corresponds to 1
+  let normalized = (discount - 0.01) / (100 - 0.01);
+  if(normalized < 0) normalized = 0;
+  if(normalized > 1) normalized = 1;
+  
+  // Vertical position: when normalized=0, bottom = 0; when normalized=1, bottom = containerHeight - wrapperHeight
+  let newBottom = normalized * (containerHeight - wrapperHeight);
+  rocketWrapper.style.bottom = newBottom + "px";
+  
+  // Horizontal position: when normalized=0, left = 0; when normalized=1, left = containerWidth - wrapperWidth
+  let newLeft = normalized * (containerWidth - wrapperWidth);
+  rocketWrapper.style.left = newLeft + "px";
 }
 
 // Handle rocket crash
@@ -131,23 +133,29 @@ function updateBalance() {
   document.getElementById("balance-display").textContent = "Balance: " + balance.toFixed(2) + "%";
 }
 
-// Generate horizontal tick marks for the bottom scale (0% to 100%)
+// Generate horizontal tick marks for the bottom scale from 0.01% to 100.00%
 function generateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = ""; // Clear any existing marks
   const containerWidth = document.getElementById("rocket-container").offsetWidth;
   
-  // Create ticks at every 10%
-  for (let perc = 0; perc <= 100; perc += 10) {
+  const startValue = 0.01;
+  const endValue = 100.00;
+  const tickCount = 10; // We'll create 11 tick marks
+  
+  for (let i = 0; i <= tickCount; i++) {
+    let value = startValue + ((endValue - startValue) / tickCount) * i;
+    let normalizedTick = i / tickCount; // Goes from 0 to 1
+    let leftPos = normalizedTick * containerWidth;
+    
     let tick = document.createElement("div");
     tick.className = "tick";
-    let leftPos = (perc / 100) * containerWidth;
     tick.style.left = leftPos + "px";
     bottomScale.appendChild(tick);
     
     let label = document.createElement("div");
     label.className = "tick-label";
-    label.textContent = perc + "%";
+    label.textContent = value.toFixed(2) + "%";
     label.style.left = (leftPos - 10) + "px";
     bottomScale.appendChild(label);
   }
