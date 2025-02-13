@@ -1,5 +1,5 @@
 let discount = 0.01;
-const discountRate = 2.0; // Increase of 2% per second
+const discountRate = 5.0; // Increased to 5% per second for more visible movement
 let gameInterval;
 let gameActive = false;
 let crashed = false;
@@ -60,9 +60,12 @@ function updateRocketPosition() {
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const containerHeight = container.offsetHeight;
   const wrapperHeight = rocketWrapper.offsetHeight;
-  // Rocket moves upward: when discount is 0, bottom = 0; when discount is 100, bottom = containerHeight - wrapperHeight
+  // When discount=0, bottom = 0; when discount=100, bottom = containerHeight - wrapperHeight
   let newBottom = (discount / 100) * (containerHeight - wrapperHeight);
   rocketWrapper.style.bottom = newBottom + "px";
+  
+  // (Optional) Log for debugging:
+  // console.log("Discount: " + discount.toFixed(2) + "%, newBottom: " + newBottom + "px");
 }
 
 // Handle rocket crash
