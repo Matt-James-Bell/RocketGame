@@ -1,6 +1,6 @@
 // The dynamic discount starts at 0.01%
 let discount = 0.01;
-// Slow rate: 0.2% per second so the early range lasts much longer
+// Use a slower rate: 0.2% per second so the early range lasts longer
 const discountRate = 0.2;
 let gameInterval;
 let gameActive = false;
@@ -11,9 +11,10 @@ let startTime;
 let accumulatedDiscount = 0;
 
 /**
- * Mapping function using a piecewise linear transform to "stretch" the early range.
- * For d <= 2.00: normalized = ((d - 0.01) / (2.00 - 0.01)) * 0.3.
- * For d > 2.00: normalized = 0.3 + ((d - 2.00) / (100.00 - 2.00)) * 0.7.
+ * Global mapping function (piecewise linear) to "stretch" the early range:
+ * - For d <= 2.00: normalized = ((d - 0.01) / (2.00 - 0.01)) * 0.3.
+ * - For d > 2.00: normalized = 0.3 + ((d - 2.00) / (100.00 - 2.00)) * 0.7.
+ * This is used for positioning the rocket in the main game.
  */
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -24,11 +25,12 @@ function mapDiscountToNormalized(d) {
 }
 
 /**
- * Update the bottom tick scale.
- * This function displays only the tick marks for the current range.
- * For discount < 2%, the window is fixed at [0.01, 2.00].
- * For discount >= 2%, the window is set to [discount*0.8, discount*1.2], clamped to [2.00, 100.00].
- * Tick marks are drawn linearly across the container width.
+ * Update the dynamic bottom tick scale.
+ * This function shows only the tick marks for the current dynamic window:
+ * - If discount < 2, the window is fixed at [0.01, 2.00].
+ * - If discount >= 2, the window is set to [discount*0.8, discount*1.2] (clamped to [2.00, 100.00]).
+ * The tick bar is drawn linearly across the container width for that window.
+ * A red marker is placed at the current discount.
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
@@ -46,30 +48,37 @@ function updateBottomScale() {
     if (windowMax > 100.00) windowMax = 100.00;
   }
   
-  // Use 6 tick marks (7 positions) for the current window
+  // Draw tick marks for the current window.
   const tickCount = 6;
   for (let i = 0; i <= tickCount; i++) {
     let value = windowMin + ((windowMax - windowMin) / tickCount) * i;
     let normalizedTick = (value - windowMin) / (windowMax - windowMin);
     let leftPos = normalizedTick * containerWidth;
     
-    // Create tick mark
+    // Create tick mark.
     const tick = document.createElement("div");
     tick.className = "tick";
     tick.style.left = leftPos + "px";
     bottomScale.appendChild(tick);
     
-    // Create tick label
+    // Create tick label.
     const label = document.createElement("div");
     label.className = "tick-label";
     label.textContent = value.toFixed(2) + "%";
     label.style.left = (leftPos - 10) + "px";
-    // Highlight the tick label if it is closest to the current discount
+    // Highlight the label if it's near the current discount.
     if (Math.abs(value - discount) < (windowMax - windowMin) / (2 * tickCount)) {
       label.classList.add("highlight");
     }
     bottomScale.appendChild(label);
   }
+  
+  // Add a marker for the current discount using a linear mapping on the current window.
+  let markerPos = ((discount - windowMin) / (windowMax - windowMin)) * containerWidth;
+  const marker = document.createElement("div");
+  marker.className = "tick-marker";
+  marker.style.left = markerPos + "px";
+  bottomScale.appendChild(marker);
 }
 
 /**
@@ -77,13 +86,13 @@ function updateBottomScale() {
  * - Resets discount to 0.01%.
  * - Disables the ignite button during a run.
  * - Determines a crash point with weighted probabilities:
- *   • 10% chance: crash between 0.01% and 0.05%.
- *   • 80% chance: crash between 1.00% and 3.00%.
- *   • 10% chance: crash between 3.00% and 100.00%.
+ *    • 10% chance: crash between 0.01% and 0.05%.
+ *    • 80% chance: crash between 1.00% and 3.00%.
+ *    • 10% chance: crash between 3.00% and 100.00%.
  * - Runs continuously (a new run starts automatically after 2 seconds).
  */
 function startGame() {
-  if (gameActive) return; // Prevent re-igniting if a run is active
+  if (gameActive) return; // Prevent starting if already running.
   
   discount = 0.01;
   crashed = false;
@@ -94,24 +103,21 @@ function startGame() {
   document.getElementById("cashout").disabled = false;
   document.getElementById("ignite").disabled = true;
   
-  // Show rocket and hide explosion
+  // Show rocket and hide explosion.
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
   updateRocketPosition();
   updateBottomScale();
   
-  // Determine crash point with weighted probability:
+  // Determine crash point with weighted probability.
   let r = Math.random();
   if (r < 0.1) {
-    // 10% chance: crash between 0.01% and 0.05%
-    crashPoint = Math.random() * (0.05 - 0.01) + 0.01;
+    crashPoint = Math.random() * (0.05 - 0.01) + 0.01; // 10%: crash between 0.01% and 0.05%
   } else if (r < 0.9) {
-    // 80% chance: crash between 1.00% and 3.00%
-    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;
+    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;  // 80%: crash between 1.00% and 3.00%
   } else {
-    // 10% chance: crash between 3.00% and 100.00%
-    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;
+    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;  // 10%: crash between 3.00% and 100.00%
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
   
@@ -124,7 +130,7 @@ function startGame() {
 function updateGame() {
   if (!gameActive) return;
   
-  let elapsed = (Date.now() - startTime) / 1000;
+  let elapsed = (Date.now() - startTime) / 1000; // seconds elapsed
   discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
   
@@ -132,7 +138,6 @@ function updateGame() {
   updateRocketPosition();
   updateBottomScale();
   
-  // Crash if the discount reaches or exceeds the crash point
   if (discount >= crashPoint) {
     crash();
   }
@@ -147,7 +152,7 @@ function updateDisplay() {
 
 /**
  * Update the rocket's position.
- * The rocket wrapper's center is aligned to the normalized value from our mapping function.
+ * The rocket wrapper's center is aligned based on the global mapping.
  */
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
@@ -157,15 +162,15 @@ function updateRocketPosition() {
   const wrapperWidth = rocketWrapper.offsetWidth;
   const wrapperHeight = rocketWrapper.offsetHeight;
   
+  // Use our global mapping function.
   let normalized = mapDiscountToNormalized(discount);
-  if (normalized < 0) normalized = 0;
-  if (normalized > 1) normalized = 1;
+  normalized = Math.max(0, Math.min(normalized, 1));
   
-  // Calculate positions so that the center of the wrapper follows the normalized value.
+  // Position so that the center of the rocket wrapper follows the normalized value.
   let newLeft = normalized * containerWidth - wrapperWidth / 2;
   let newBottom = normalized * containerHeight - wrapperHeight / 2;
   
-  // Clamp positions to container bounds.
+  // Clamp positions.
   newLeft = Math.max(0, Math.min(newLeft, containerWidth - wrapperWidth));
   newBottom = Math.max(0, Math.min(newBottom, containerHeight - wrapperHeight));
   
@@ -176,7 +181,7 @@ function updateRocketPosition() {
 /**
  * Handle rocket crash.
  * - Stops the run.
- * - Resets accumulated discount to 0 (loss).
+ * - Resets accumulated discount to 0.
  * - Displays an explosion.
  * - Automatically starts a new run after 2 seconds.
  */
@@ -185,7 +190,7 @@ function crash() {
   crashed = true;
   clearInterval(gameInterval);
   
-  // Lose all accumulated discount on crash.
+  // Lose accumulated discount on crash.
   accumulatedDiscount = 0;
   updateAccumulatedDiscount();
   
@@ -206,7 +211,7 @@ function crash() {
 
 /**
  * Handle Cash Out.
- * - Locks in the current discount and adds it to accumulatedDiscount.
+ * - Locks in the current discount (adds it to accumulatedDiscount).
  * - Continues the game automatically after 2 seconds.
  */
 function cashOut() {
@@ -234,9 +239,9 @@ function updateAccumulatedDiscount() {
   document.getElementById("discount-display").textContent = "Discount: " + accumulatedDiscount.toFixed(2) + "%";
 }
 
-// Update the bottom scale on window resize.
+// Update bottom scale on window resize.
 window.addEventListener("resize", updateBottomScale);
-// Initialize the bottom scale on page load.
+// Initialize bottom scale on page load.
 window.addEventListener("load", updateBottomScale);
 
 // Button event listeners.
