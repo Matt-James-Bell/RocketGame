@@ -1,1 +1,43 @@
 
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+#game-container {
+  background: #fff;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#multiplier {
+  font-size: 2.5em;
+  margin: 20px 0;
+}
+
+#status {
+  font-size: 1.2em;
+  margin: 10px 0 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1em;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
