@@ -1,5 +1,5 @@
 let discount = 0.01;
-const discountRate = 5.0; // Increased to 5% per second for more visible movement
+const discountRate = 5.0; // 5% per second for visible movement
 let gameInterval;
 let gameActive = false;
 let crashed = false;
@@ -22,11 +22,18 @@ function startGame() {
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
 
-  // Reset rocket position (starts at bottom)
+  // Reset rocket position (starts at bottom left)
   updateRocketPosition();
 
-  // Set a random crash point between 0% and 100%
-  crashPoint = Math.random() * 100;
+  // Determine crash point with weighted probability:
+  // 5/6 chance to choose a crash point uniformly between 0.01% and 2.00%
+  // 1/6 chance to choose a crash point uniformly between 2.00% and 100%
+  let r = Math.random();
+  if (r < 5/6) {
+    crashPoint = Math.random() * (2.00 - 0.01) + 0.01;
+  } else {
+    crashPoint = Math.random() * (100 - 2.00) + 2.00;
+  }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
 
   gameInterval = setInterval(updateGame, 50);
@@ -54,18 +61,25 @@ function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
 }
 
-// Update rocket vertical position based on discount progress
+// Update rocket position both vertically and horizontally based on discount progress
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
   const rocketWrapper = document.getElementById("rocket-wrapper");
+  
+  // Vertical movement: when discount=0, bottom = 0; when discount=100, bottom = containerHeight - wrapperHeight
   const containerHeight = container.offsetHeight;
   const wrapperHeight = rocketWrapper.offsetHeight;
-  // When discount=0, bottom = 0; when discount=100, bottom = containerHeight - wrapperHeight
   let newBottom = (discount / 100) * (containerHeight - wrapperHeight);
   rocketWrapper.style.bottom = newBottom + "px";
   
-  // (Optional) Log for debugging:
-  // console.log("Discount: " + discount.toFixed(2) + "%, newBottom: " + newBottom + "px");
+  // Horizontal movement: when discount=0, left = 0; when discount=100, left = containerWidth - wrapperWidth
+  const containerWidth = container.offsetWidth;
+  const wrapperWidth = rocketWrapper.offsetWidth;
+  let newLeft = (discount / 100) * (containerWidth - wrapperWidth);
+  rocketWrapper.style.left = newLeft + "px";
+  
+  // (Optional) Uncomment for debugging:
+  // console.log(`Discount: ${discount.toFixed(2)}%, newBottom: ${newBottom}px, newLeft: ${newLeft}px`);
 }
 
 // Handle rocket crash
