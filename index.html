@@ -3,20 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Rocket Discount Game</title>
-  <!-- Google Font for a futuristic look -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Use a clean, readable font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="game-container">
     <h1>Rocket Discount Game</h1>
     
-    <!-- Rocket Animation Container with Space Background -->
+    <!-- Rocket Container with space background and rulers -->
     <div id="rocket-container">
-      <img id="rocket" src="img/rocket.png" alt="Rocket">
+      <!-- Left Ruler -->
+      <div id="left-ruler"></div>
+      
+      <!-- Rocket Wrapper: Contains rocket, flame & smoke -->
+      <div id="rocket-wrapper">
+        <img id="rocket" src="img/rocket.png" alt="Rocket">
+        <img id="flame" src="img/flame.png" alt="Flame">
+        <img id="smoke" src="img/smoke.png" alt="Smoke">
+      </div>
+      
+      <!-- Right Ruler -->
+      <div id="right-ruler"></div>
+      
+      <!-- Explosion image (hidden by default) -->
+      <img id="explosion" src="img/explosion.png" alt="Explosion">
     </div>
     
-    <!-- Display the current discount -->
     <div id="discount-display">0.01% Discount</div>
     <div id="status">Press "Start Game" to begin!</div>
     
