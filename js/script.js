@@ -1,5 +1,5 @@
 let discount = 0.01;
-const discountRate = 0.2; // Increase of 0.2% per second
+const discountRate = 2.0; // Increase of 2% per second
 let gameInterval;
 let gameActive = false;
 let crashed = false;
@@ -22,11 +22,11 @@ function startGame() {
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
 
-  // Reset rocket position (start at bottom center)
+  // Reset rocket position (starts at bottom)
   updateRocketPosition();
 
-  // Set a random crash point between 20% and 80%
-  crashPoint = Math.random() * (80 - 20) + 20;
+  // Set a random crash point between 0% and 100%
+  crashPoint = Math.random() * 100;
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
 
   gameInterval = setInterval(updateGame, 50);
@@ -49,18 +49,18 @@ function updateGame() {
   }
 }
 
-// Update the real-time discount display (under the rocket)
+// Update the real-time discount display
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
 }
 
-// Update rocket (ship) vertical position based on discount progress
+// Update rocket vertical position based on discount progress
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const containerHeight = container.offsetHeight;
   const wrapperHeight = rocketWrapper.offsetHeight;
-  // The rocket moves upward: when discount is 0, bottom = 0; when discount is 100, bottom = containerHeight - wrapperHeight
+  // Rocket moves upward: when discount is 0, bottom = 0; when discount is 100, bottom = containerHeight - wrapperHeight
   let newBottom = (discount / 100) * (containerHeight - wrapperHeight);
   rocketWrapper.style.bottom = newBottom + "px";
 }
@@ -71,11 +71,10 @@ function crash() {
   crashed = true;
   clearInterval(gameInterval);
   
-  // Hide the rocket & its effects; show explosion at the same position
+  // Hide the rocket and show explosion at the same position
   const rocketWrapper = document.getElementById("rocket-wrapper");
   rocketWrapper.style.display = "none";
   const explosionElem = document.getElementById("explosion");
-  // Position explosion at the same horizontal center and bottom position as the rocket-wrapper
   explosionElem.style.left = rocketWrapper.style.left;
   explosionElem.style.bottom = rocketWrapper.style.bottom;
   explosionElem.style.display = "block";
@@ -118,19 +117,17 @@ function updateBalance() {
 // Generate horizontal tick marks for the bottom scale (0% to 100%)
 function generateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
-  bottomScale.innerHTML = ""; // clear any existing marks
+  bottomScale.innerHTML = ""; // Clear any existing marks
   const containerWidth = document.getElementById("rocket-container").offsetWidth;
   
   // Create ticks at every 10%
   for (let perc = 0; perc <= 100; perc += 10) {
     let tick = document.createElement("div");
     tick.className = "tick";
-    // Calculate left position: (perc/100) * containerWidth
     let leftPos = (perc / 100) * containerWidth;
     tick.style.left = leftPos + "px";
     bottomScale.appendChild(tick);
     
-    // Create a label for the tick
     let label = document.createElement("div");
     label.className = "tick-label";
     label.textContent = perc + "%";
@@ -139,7 +136,7 @@ function generateBottomScale() {
   }
 }
 
-// Re-generate bottom scale when the window is resized
+// Regenerate bottom scale on window resize
 window.addEventListener("resize", generateBottomScale);
 
 // Initialize bottom scale on page load
