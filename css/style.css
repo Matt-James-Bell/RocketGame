@@ -87,7 +87,7 @@ h1 {
   border-top: 1px solid #fff;
 }
 
-/* Tick mark styling */
+/* Tick mark styling for bottom scale */
 .tick {
   position: absolute;
   bottom: 0;
@@ -96,7 +96,7 @@ h1 {
   background: #fff;
 }
 
-/* Tick label styling */
+/* Tick label styling for bottom scale */
 .tick-label {
   position: absolute;
   bottom: 10px;
@@ -104,13 +104,13 @@ h1 {
   color: #fff;
 }
 
-/* Highlighted tick label */
+/* Highlighted tick label for bottom scale */
 .tick-label.highlight {
   font-size: 14px;
   font-weight: bold;
 }
 
-/* Marker for current discount on bottom tick bar */
+/* Marker for current discount on bottom scale */
 .tick-marker {
   position: absolute;
   bottom: 0;
@@ -124,16 +124,16 @@ h1 {
   position: absolute;
   top: 0;
   right: 0;
-  width: 50px;
+  width: 40px;
   height: 100%;
   border-left: 1px solid #fff;
 }
 
-/* Vertical tick mark styling */
+/* Vertical tick mark styling (smaller) */
 .v-tick {
   position: absolute;
   left: 0;
-  width: 10px;
+  width: 8px;
   height: 1px;
   background: #fff;
 }
@@ -141,7 +141,7 @@ h1 {
 /* Vertical tick label styling */
 .v-tick-label {
   position: absolute;
-  left: 12px;
+  left: 10px;
   font-size: 10px;
   color: #fff;
 }
@@ -150,7 +150,7 @@ h1 {
 .v-tick-marker {
   position: absolute;
   left: 0;
-  width: 50px;
+  width: 40px;
   height: 2px;
   background: red;
 }
