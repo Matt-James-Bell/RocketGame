@@ -38,10 +38,9 @@ h1 {
   overflow: hidden;
 }
 
-/* Rocket Wrapper – its center will follow our mapping */
+/* Rocket Wrapper – its center will be aligned dynamically */
 #rocket-wrapper {
   position: absolute;
-  /* We start it at bottom left; its center will be aligned dynamically */
   left: 0;
   bottom: 0;
   width: 150px;
@@ -51,18 +50,17 @@ h1 {
 /* Rocket Image */
 #rocket {
   position: absolute;
-  /* Position within wrapper (we leave space above for discount display) */
-  bottom: 50px;
+  bottom: 50px; /* Leaves space for discount display */
   left: 50%;
   transform: translateX(-50%);
   width: 100px;
   z-index: 3;
 }
 
-/* Real-time Discount Display (shown above the rocket) */
+/* Real-time Discount Display (above the rocket) */
 #ship-discount {
   position: absolute;
-  bottom: 100%;  /* Place above the rocket image */
+  bottom: 100%;  /* Positioned above the rocket image */
   left: 50%;
   transform: translateX(-50%);
   font-size: 1em;
@@ -150,7 +148,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Accumulated Discount Display (renamed from "Balance") */
+/* Accumulated Discount Display */
 #discount-display {
   position: absolute;
   bottom: 10px;
