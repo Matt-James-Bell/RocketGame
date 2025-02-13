@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Rocket Discount Game</title>
+  <!-- Google Font for a futuristic look -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="game-container">
     <h1>Rocket Discount Game</h1>
     
-    <!-- Rocket Animation Container -->
+    <!-- Rocket Animation Container with Space Background -->
     <div id="rocket-container">
       <img id="rocket" src="img/rocket.png" alt="Rocket">
     </div>
     
-    <div id="multiplier">1.00x</div>
+    <!-- Display the current discount -->
+    <div id="discount-display">0.01% Discount</div>
     <div id="status">Press "Start Game" to begin!</div>
+    
     <button id="start">Start Game</button>
     <button id="cashout" disabled>Cash Out</button>
   </div>
