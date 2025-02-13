@@ -1,20 +1,20 @@
 // The dynamic discount starts at 0.01%
 let discount = 0.01;
-// Use a slower rate: 0.2% per second so the early range lasts longer
+// Use a slower rate: 0.2% per second so the early range lasts much longer
 const discountRate = 0.2;
 let gameInterval;
 let gameActive = false;
 let crashed = false;
 let crashPoint;
 let startTime;
-// Accumulated discount (resets to 0 on crash)
+// Accumulated discount resets to 0 on crash
 let accumulatedDiscount = 0;
 
 /**
  * Global mapping function (piecewise linear) to "stretch" the early range:
- * - For d <= 2.00: normalized = ((d - 0.01) / (2.00 - 0.01)) * 0.3.
- * - For d > 2.00: normalized = 0.3 + ((d - 2.00) / (100.00 - 2.00)) * 0.7.
- * This is used for positioning the rocket in the main game.
+ * For d <= 2.00: normalized = ((d - 0.01) / (2.00 - 0.01)) * 0.3.
+ * For d > 2.00: normalized = 0.3 + ((d - 2.00) / (100.00 - 2.00)) * 0.7.
+ * (Used for vertical positioning.)
  */
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -26,15 +26,14 @@ function mapDiscountToNormalized(d) {
 
 /**
  * Update the dynamic bottom tick scale.
- * This function shows only the tick marks for the current dynamic window:
+ * This version displays only the tick marks for the current dynamic window:
  * - If discount < 2, the window is fixed at [0.01, 2.00].
- * - If discount >= 2, the window is set to [discount*0.8, discount*1.2] (clamped to [2.00, 100.00]).
- * The tick bar is drawn linearly across the container width for that window.
- * A red marker is placed at the current discount.
+ * - If discount >= 2, the window is set to [discount*0.8, discount*1.2], clamped to [2.00, 100.00].
+ * Tick marks and labels are drawn linearly across the container width, and a red marker is placed at the current discount.
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
-  bottomScale.innerHTML = ""; // Clear existing tick marks.
+  bottomScale.innerHTML = ""; // Clear existing content.
   const containerWidth = document.getElementById("rocket-container").offsetWidth;
   
   let windowMin, windowMax;
@@ -55,25 +54,23 @@ function updateBottomScale() {
     let normalizedTick = (value - windowMin) / (windowMax - windowMin);
     let leftPos = normalizedTick * containerWidth;
     
-    // Create tick mark.
     const tick = document.createElement("div");
     tick.className = "tick";
     tick.style.left = leftPos + "px";
     bottomScale.appendChild(tick);
     
-    // Create tick label.
     const label = document.createElement("div");
     label.className = "tick-label";
     label.textContent = value.toFixed(2) + "%";
     label.style.left = (leftPos - 10) + "px";
-    // Highlight the label if it's near the current discount.
+    // Highlight the tick label closest to the current discount.
     if (Math.abs(value - discount) < (windowMax - windowMin) / (2 * tickCount)) {
       label.classList.add("highlight");
     }
     bottomScale.appendChild(label);
   }
   
-  // Add a marker for the current discount using a linear mapping on the current window.
+  // Add a red marker for the current discount.
   let markerPos = ((discount - windowMin) / (windowMax - windowMin)) * containerWidth;
   const marker = document.createElement("div");
   marker.className = "tick-marker";
@@ -92,7 +89,7 @@ function updateBottomScale() {
  * - Runs continuously (a new run starts automatically after 2 seconds).
  */
 function startGame() {
-  if (gameActive) return; // Prevent starting if already running.
+  if (gameActive) return; // Prevent starting if a run is active.
   
   discount = 0.01;
   crashed = false;
@@ -103,7 +100,7 @@ function startGame() {
   document.getElementById("cashout").disabled = false;
   document.getElementById("ignite").disabled = true;
   
-  // Show rocket and hide explosion.
+  // Show the rocket and hide explosion.
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
@@ -113,11 +110,11 @@ function startGame() {
   // Determine crash point with weighted probability.
   let r = Math.random();
   if (r < 0.1) {
-    crashPoint = Math.random() * (0.05 - 0.01) + 0.01; // 10%: crash between 0.01% and 0.05%
+    crashPoint = Math.random() * (0.05 - 0.01) + 0.01; // 10%: [0.01, 0.05]
   } else if (r < 0.9) {
-    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;  // 80%: crash between 1.00% and 3.00%
+    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;  // 80%: [1.00, 3.00]
   } else {
-    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;  // 10%: crash between 3.00% and 100.00%
+    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;  // 10%: [3.00, 100.00]
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
   
@@ -130,7 +127,7 @@ function startGame() {
 function updateGame() {
   if (!gameActive) return;
   
-  let elapsed = (Date.now() - startTime) / 1000; // seconds elapsed
+  let elapsed = (Date.now() - startTime) / 1000;
   discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
   
@@ -152,7 +149,9 @@ function updateDisplay() {
 
 /**
  * Update the rocket's position.
- * The rocket wrapper's center is aligned based on the global mapping.
+ * The rocket's vertical position uses the global mapping,
+ * while its horizontal position is determined by the dynamic window (same as the tick bar).
+ * This makes the rocket's center align perfectly with the tick marker.
  */
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
@@ -162,17 +161,28 @@ function updateRocketPosition() {
   const wrapperWidth = rocketWrapper.offsetWidth;
   const wrapperHeight = rocketWrapper.offsetHeight;
   
-  // Use our global mapping function.
-  let normalized = mapDiscountToNormalized(discount);
-  normalized = Math.max(0, Math.min(normalized, 1));
+  // Vertical (y-axis) using global mapping.
+  let normalizedVert = mapDiscountToNormalized(discount);
+  let newBottom = normalizedVert * (containerHeight - wrapperHeight);
   
-  // Position so that the center of the rocket wrapper follows the normalized value.
-  let newLeft = normalized * containerWidth - wrapperWidth / 2;
-  let newBottom = normalized * containerHeight - wrapperHeight / 2;
+  // Horizontal (x-axis) using dynamic window mapping:
+  let windowMin, windowMax;
+  if (discount < 2.00) {
+    windowMin = 0.01;
+    windowMax = 2.00;
+  } else {
+    windowMin = discount * 0.8;
+    windowMax = discount * 1.2;
+    if (windowMin < 2.00) windowMin = 2.00;
+    if (windowMax > 100.00) windowMax = 100.00;
+  }
+  let normalizedHoriz = (discount - windowMin) / (windowMax - windowMin);
+  let markerPos = normalizedHoriz * containerWidth;
+  // Center the rocket so its center aligns with the marker.
+  let newLeft = markerPos - wrapperWidth / 2;
   
-  // Clamp positions.
+  // Clamp horizontal position.
   newLeft = Math.max(0, Math.min(newLeft, containerWidth - wrapperWidth));
-  newBottom = Math.max(0, Math.min(newBottom, containerHeight - wrapperHeight));
   
   rocketWrapper.style.left = newLeft + "px";
   rocketWrapper.style.bottom = newBottom + "px";
@@ -180,8 +190,7 @@ function updateRocketPosition() {
 
 /**
  * Handle rocket crash.
- * - Stops the run.
- * - Resets accumulated discount to 0.
+ * - Stops the run and resets accumulated discount to 0.
  * - Displays an explosion.
  * - Automatically starts a new run after 2 seconds.
  */
@@ -190,7 +199,6 @@ function crash() {
   crashed = true;
   clearInterval(gameInterval);
   
-  // Lose accumulated discount on crash.
   accumulatedDiscount = 0;
   updateAccumulatedDiscount();
   
