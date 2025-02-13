@@ -11,7 +11,7 @@
   <div id="game-container">
     <h1>Rocket Discount Game</h1>
     
-    <!-- Rocket Container with space background and rulers -->
+    <!-- Rocket Container with space background and vertical rulers -->
     <div id="rocket-container">
       <!-- Left Ruler -->
       <div id="left-ruler"></div>
@@ -30,11 +30,16 @@
       <img id="explosion" src="img/explosion.png" alt="Explosion">
     </div>
     
+    <!-- Current discount display -->
     <div id="discount-display">0.01% Discount</div>
-    <div id="status">Press "Start Game" to begin!</div>
+    <div id="status">Press "Ignite" to begin!</div>
     
-    <button id="start">Start Game</button>
+    <!-- Buttons: Ignite (red) and Cash Out (green) -->
+    <button id="ignite">Ignite</button>
     <button id="cashout" disabled>Cash Out</button>
+    
+    <!-- Balance Display at bottom left -->
+    <div id="balance-display">Balance: 0.00%</div>
   </div>
   <script src="js/script.js"></script>
 </body>
