@@ -38,7 +38,7 @@ h1 {
   overflow: hidden;
 }
 
-/* Rocket Wrapper – will move diagonally from bottom left to top right */
+/* Rocket Wrapper – moves diagonally from bottom left to top right */
 #rocket-wrapper {
   position: absolute;
   bottom: 0;
