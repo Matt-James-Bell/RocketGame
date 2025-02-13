@@ -13,18 +13,16 @@
     
     <!-- Rocket Container with space background -->
     <div id="rocket-container">
-      <!-- Moving rocket wrapper (contains the rocket, its flame, smoke, and real-time discount display) -->
+      <!-- Rocket Wrapper for vertical movement -->
       <div id="rocket-wrapper">
         <img id="rocket" src="img/rocket.png" alt="Rocket">
-        <img id="flame" src="img/flame.png" alt="Flame">
-        <img id="smoke" src="img/smoke.png" alt="Smoke">
         <div id="ship-discount">0.00% Discount</div>
       </div>
       
       <!-- Explosion graphic (hidden by default) -->
       <img id="explosion" src="img/explosion.png" alt="Explosion">
       
-      <!-- Horizontal bottom scale showing 0%–100% -->
+      <!-- Bottom Scale (horizontal ruler) -->
       <div id="bottom-scale"></div>
     </div>
     
@@ -34,7 +32,7 @@
     <button id="ignite">Ignite</button>
     <button id="cashout" disabled>Cash Out</button>
     
-    <!-- Balance display -->
+    <!-- Balance Display -->
     <div id="balance-display">Balance: 0.00%</div>
   </div>
   <script src="js/script.js"></script>
