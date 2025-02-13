@@ -11,22 +11,21 @@
   <div id="game-container">
     <h1>Rocket Discount Game</h1>
     
-    <!-- Rocket Container with a space background -->
+    <!-- Rocket Container with space background -->
     <div id="rocket-container">
-      <!-- The moving rocket wrapper (ship plus attached flame/smoke and discount display) -->
+      <!-- Moving rocket wrapper (contains the rocket, its flame, smoke, and real-time discount display) -->
       <div id="rocket-wrapper">
-        <!-- Flame (attached to the tail) -->
-        <img id="flame" src="img/flame.png" alt="Flame">
-        <!-- Smoke trail (behind the flame) -->
-        <img id="smoke" src="img/smoke.png" alt="Smoke">
-        <!-- Rocket image -->
         <img id="rocket" src="img/rocket.png" alt="Rocket">
-        <!-- Real-time discount display (shown right under the ship) -->
+        <img id="flame" src="img/flame.png" alt="Flame">
+        <img id="smoke" src="img/smoke.png" alt="Smoke">
         <div id="ship-discount">0.00% Discount</div>
       </div>
       
-      <!-- Explosion (hidden by default) -->
+      <!-- Explosion graphic (hidden by default) -->
       <img id="explosion" src="img/explosion.png" alt="Explosion">
+      
+      <!-- Horizontal bottom scale showing 0%–100% -->
+      <div id="bottom-scale"></div>
     </div>
     
     <div id="status">Press "Ignite" to begin!</div>
@@ -35,7 +34,7 @@
     <button id="ignite">Ignite</button>
     <button id="cashout" disabled>Cash Out</button>
     
-    <!-- Balance Display -->
+    <!-- Balance display -->
     <div id="balance-display">Balance: 0.00%</div>
   </div>
   <script src="js/script.js"></script>
