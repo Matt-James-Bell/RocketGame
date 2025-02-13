@@ -34,7 +34,7 @@ h1 {
   font-size: 48px;
   color: yellow;
   z-index: 10;
-  display: none;
+  display: block;
 }
 
 /* Rocket Container (Space background) */
