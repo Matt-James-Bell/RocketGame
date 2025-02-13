@@ -10,13 +10,15 @@
 <body>
   <div id="game-container">
     <h1>Rocket Discount Game</h1>
+    <!-- Countdown display (hidden until needed) -->
+    <div id="countdown"></div>
     
     <!-- Rocket Container with space background -->
     <div id="rocket-container">
       <!-- Rocket Wrapper for movement -->
       <div id="rocket-wrapper">
         <img id="rocket" src="img/rocket.png" alt="Rocket">
-        <!-- Current discount display above the rocket (moved closer) -->
+        <!-- Current discount display above the rocket -->
         <div id="ship-discount">0.01% Discount</div>
       </div>
       
@@ -28,18 +30,16 @@
       
       <!-- Dynamic Vertical Ticker (on right side) -->
       <div id="vertical-ticker"></div>
-      
-      <!-- Current Run Winnings Box (top right) -->
-      <div id="current-run">Current Run: 0.00%</div>
     </div>
     
     <div id="status">Game is running continuously.</div>
     
-    <!-- Buttons -->
+    <!-- Only Cash Out button is active; Ignite button is disabled -->
     <button id="cashout">Cash Out</button>
     
-    <!-- Accumulated Discount Display -->
+    <!-- Total Discount (bottom left) and Current Run (bottom right) -->
     <div id="discount-display">Total Discount: 0.00%</div>
+    <div id="current-discount">Current: 0.00%</div>
   </div>
   <script src="js/script.js"></script>
 </body>
