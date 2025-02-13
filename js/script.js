@@ -1,7 +1,7 @@
 // The dynamic discount value now starts at 0.01%
 let discount = 0.01;
-// Use a slower rate so the early range lasts longer: 1% per second
-const discountRate = 1.0;
+// Use a slower rate so that the early range lasts longer: 0.5% per second
+const discountRate = 0.5;
 let gameInterval;
 let gameActive = false;
 let crashed = false;
@@ -24,47 +24,42 @@ function mapDiscountToNormalized(d) {
 }
 
 /**
- * Dynamic bottom scale:
- * For discount < 2%, show fixed range: [0.01, 2.00].
- * For discount >= 2%, show a window centered around the current discount,
- * with 20% below and above (clamped to [2.00, 100.00]).
+ * Dynamic Bottom Scale:
+ * Always shows tick marks for the full range [0.01, 100].
+ * The tick labels are highlighted (enlarged) if they are closest to the current discount.
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
   bottomScale.innerHTML = ""; // Clear existing tick marks.
   const containerWidth = document.getElementById("rocket-container").offsetWidth;
   
-  let windowMin, windowMax;
-  if (discount < 2.00) {
-    windowMin = 0.01;
-    windowMax = 2.00;
-  } else {
-    windowMin = discount * 0.8;
-    windowMax = discount * 1.2;
-    if (windowMin < 2.00) windowMin = 2.00;
-    if (windowMax > 100.00) windowMax = 100.00;
-  }
+  // Define a set of tick values for the full range
+  const tickValues = [0.01, 0.1, 0.5, 1, 2, 3, 5, 10, 20, 50, 100];
   
-  // We'll create, say, 5 tick marks (6 positions)
-  const tickCount = 5;
-  for (let i = 0; i <= tickCount; i++) {
-    let value = windowMin + ((windowMax - windowMin) / tickCount) * i;
-    // For the dynamic scale, we map the tick value to a normalized value within this window.
-    // Here we use a linear mapping from [windowMin, windowMax] to [0,1]
-    let normalizedTick = (value - windowMin) / (windowMax - windowMin);
-    let leftPos = normalizedTick * containerWidth;
+  // Compute current normalized discount using our mapping function
+  const currentNorm = mapDiscountToNormalized(discount);
+  
+  tickValues.forEach(value => {
+    const tickNorm = mapDiscountToNormalized(value);
+    const leftPos = tickNorm * containerWidth;
     
-    let tick = document.createElement("div");
+    // Create tick mark
+    const tick = document.createElement("div");
     tick.className = "tick";
     tick.style.left = leftPos + "px";
     bottomScale.appendChild(tick);
     
-    let label = document.createElement("div");
+    // Create tick label
+    const label = document.createElement("div");
     label.className = "tick-label";
     label.textContent = value.toFixed(2) + "%";
     label.style.left = (leftPos - 10) + "px";
+    // Highlight the label if it's within 0.05 of the current normalized discount
+    if (Math.abs(tickNorm - currentNorm) < 0.05) {
+      label.classList.add("highlight");
+    }
     bottomScale.appendChild(label);
-  }
+  });
 }
 
 // Start (Ignite) the game and reset state
@@ -87,13 +82,13 @@ function startGame() {
   updateBottomScale();
 
   // Determine crash point using weighted probability:
-  // 5/6 chance: uniformly between 0.01% and 2.00%
-  // 1/6 chance: uniformly between 2.00% and 100.00%
+  // 80% chance: uniformly between 1.00% and 3.00%
+  // 20% chance: uniformly between 3.00% and 100.00%
   let r = Math.random();
-  if (r < 5/6) {
-    crashPoint = Math.random() * (2.00 - 0.01) + 0.01;
+  if (r < 0.8) {
+    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;
   } else {
-    crashPoint = Math.random() * (100.00 - 2.00) + 2.00;
+    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
 
@@ -112,7 +107,7 @@ function updateGame() {
   updateRocketPosition();
   updateBottomScale();
   
-  // Crash if discount reaches/exceeds crash point
+  // Crash if discount reaches or exceeds crash point
   if (discount >= crashPoint) {
     crash();
   }
@@ -195,7 +190,7 @@ function updateAccumulatedDiscount() {
   document.getElementById("discount-display").textContent = "Discount: " + accumulatedDiscount.toFixed(2) + "%";
 }
 
-// Regenerate bottom scale on window resize (using the current discount to update the zoom window)
+// Regenerate bottom scale on window resize (using current discount)
 window.addEventListener("resize", updateBottomScale);
 
 // Initialize bottom scale on page load
