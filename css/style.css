@@ -37,13 +37,13 @@ h1 {
   display: block;
 }
 
-/* Rocket Container (Space background) */
+/* Rocket Container (Space background using space2.jpg) */
 #rocket-container {
   position: relative;
   width: 100%;
-  height: 600px; /* Ample vertical room */
+  height: 600px;
   margin-bottom: 20px;
-  background: url('../img/space.jpg') no-repeat center center;
+  background: url('../img/space2.jpg') no-repeat center center;
   background-size: cover;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
@@ -62,7 +62,7 @@ h1 {
 /* Rocket Image */
 #rocket {
   position: absolute;
-  bottom: 50px; /* Leaves space for discount display */
+  bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
   width: 100px;
