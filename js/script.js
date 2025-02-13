@@ -27,8 +27,8 @@ function mapDiscountToNormalized(d) {
 /**
  * Update the bottom tick scale (horizontal).
  * It displays tick marks for the current dynamic window:
- * - For discount < 2: window = [0.01, 2.00].
- * - For discount >= 2: window = [discount * 0.8, discount * 1.2] (clamped to [2.00, 100.00]).
+ * - If discount < 2: window = [0.01, 2.00].
+ * - If discount >= 2: window = [discount * 0.8, discount * 1.2] (clamped to [2.00, 100.00]).
  * Tick labels move dynamically; the red marker stays aligned with the rocket's center.
  */
 function updateBottomScale() {
@@ -80,7 +80,7 @@ function updateBottomScale() {
 
 /**
  * Update the vertical ticker (right side).
- * Uses the same dynamic window as the bottom scale.
+ * It uses the same dynamic window as the bottom scale.
  * Tick marks and labels are drawn along the container height,
  * and the red marker is positioned at the rocket's center Y.
  */
@@ -173,7 +173,7 @@ function updateRocketPosition() {
 
 /**
  * Update the real-time discount display (above the rocket)
- * and the current run's box (bottom right).
+ * and the current run's discount (bottom right).
  */
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
@@ -238,7 +238,7 @@ function updateGame() {
  * - Stops the run.
  * - Resets accumulated discount to 0.
  * - Displays an explosion.
- * - After 2 seconds, auto-starts a new 5-second countdown.
+ * - After 2 seconds, auto-starts a new run.
  */
 function crash() {
   gameActive = false;
@@ -258,16 +258,16 @@ function crash() {
   
   document.getElementById("status").textContent = "Crashed! You lost your total discount.";
   document.getElementById("cashout").disabled = true;
-  document.getElementById("ignite").disabled = true;
+  document.getElementById("ignite").disabled = false;
   
-  setTimeout(startCountdown, 2000);
+  setTimeout(startGame, 2000);
 }
 
 /**
  * Handle Cash Out.
  * - Locks in the current discount (adds it to accumulatedDiscount).
  * - Displays the final discount above the rocket in green.
- * - After 2 seconds, auto-starts a new 5-second countdown.
+ * - After 2 seconds, auto-starts a new run.
  */
 function cashOut() {
   if (!gameActive || crashed) return;
@@ -277,7 +277,7 @@ function cashOut() {
   updateDisplay();
   document.getElementById("status").textContent = "Cashed out at " + discount.toFixed(2) + "% discount!";
   document.getElementById("cashout").disabled = true;
-  document.getElementById("ignite").disabled = true;
+  document.getElementById("ignite").disabled = false;
   
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
@@ -287,7 +287,7 @@ function cashOut() {
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
   
-  setTimeout(startCountdown, 2000);
+  setTimeout(startGame, 2000);
 }
 
 /**
@@ -297,48 +297,12 @@ function updateAccumulatedDiscount() {
   document.getElementById("discount-display").textContent = "Total Discount: " + accumulatedDiscount.toFixed(2) + "%";
 }
 
-/**
- * Start a 5-second countdown.
- * The countdown is displayed on screen.
- * During the countdown, the player can click "Ignite" to join the current run.
- * When the countdown reaches 0, the run auto-starts.
- */
-function startCountdown() {
-  const countdownDiv = document.getElementById("countdown");
-  countdownDiv.style.display = "block";
-  let count = 5;
-  countdownDiv.textContent = count;
-  
-  // Enable the Ignite button during countdown.
-  document.getElementById("ignite").disabled = false;
-  
-  countdownInterval = setInterval(() => {
-    count--;
-    if (count > 0) {
-      countdownDiv.textContent = count;
-    } else {
-      clearInterval(countdownInterval);
-      countdownDiv.style.display = "none";
-      startRun();
-    }
-  }, 1000);
-}
-
-/**
- * Start the run (called when Ignite is clicked or countdown reaches 0).
- */
-function startRun() {
-  document.getElementById("ignite").disabled = true;
-  startGame();
-}
-
-// On page load, start the countdown.
-window.addEventListener("load", startCountdown);
+// Update tick scales on window resize.
+window.addEventListener("resize", () => {
+  updateBottomScale();
+  updateVerticalTicker();
+});
 
 // Button event listeners.
-document.getElementById("ignite").addEventListener("click", () => {
-  clearInterval(countdownInterval);
-  document.getElementById("countdown").style.display = "none";
-  startRun();
-});
+document.getElementById("ignite").addEventListener("click", startGame);
 document.getElementById("cashout").addEventListener("click", cashOut);
