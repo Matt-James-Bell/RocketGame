@@ -25,7 +25,7 @@ h1 {
   position: relative;
 }
 
-/* Rocket Container */
+/* Rocket Container (Space background) */
 #rocket-container {
   position: relative;
   width: 100%;
@@ -38,95 +38,80 @@ h1 {
   overflow: hidden;
 }
 
-/* Ruler Styles */
-#left-ruler, #right-ruler {
-  position: absolute;
-  top: 0;
-  width: 30px;
-  height: 100%;
-  color: #fff;
-  font-size: 12px;
-}
-#left-ruler {
-  left: 0;
-  text-align: left;
-  padding-left: 5px;
-}
-#right-ruler {
-  right: 0;
-  text-align: right;
-  padding-right: 5px;
-}
-.ruler-tick {
-  position: absolute;
-}
-
-/* Rocket Wrapper & Effects (3× Bigger) */
+/* Rocket Wrapper – the moving container for the ship and its effects */
 #rocket-wrapper {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 180px;   /* Increased from 60px */
-  height: 360px;  /* Increased from 120px */
-  z-index: 3;
+  top: 50%;
+  left: 0;  /* will be updated in JS */
+  transform: translateY(-50%);
+  width: 180px;   /* enough width to include ship plus flame */
+  height: 150px;
 }
 
-/* Rocket Image (3× Bigger) */
+/* Rocket Image (ship) – assume it's drawn facing right */
 #rocket {
   position: absolute;
-  bottom: 40px; /* Leave room for flame */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 150px; /* Increased from 50px */
+  left: 20px;  /* leave space at left for the flame */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
   z-index: 3;
 }
 
-/* Flame Image - Attached to bottom & same width as rocket */
+/* Flame Image – attached to the tail (left side) of the ship */
 #flame {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 150px; /* Same as rocket */
-  opacity: 0.8;
+  left: -50px;  /* positioned immediately to the left of the rocket */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
   z-index: 2;
   animation: flicker 0.2s infinite;
 }
 
-/* Smoke Image */
+/* Smoke Image – trailing behind the flame */
 #smoke {
   position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 160px;
-  opacity: 0.6;
+  left: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
   z-index: 1;
   animation: drift 1s infinite;
+}
+
+/* Real-time Discount Display (under the ship) */
+#ship-discount {
+  position: absolute;
+  top: 100%;  /* directly below the rocket-wrapper content */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1em;
+  color: #fff;
+  margin-top: 5px;
 }
 
 /* Explosion Image */
 #explosion {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 150px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 180px;
   display: none;
   z-index: 4;
 }
 
 /* Keyframes for flame flicker */
 @keyframes flicker {
-  0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
-  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  0%, 100% { opacity: 0.8; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
 }
 
 /* Keyframes for smoke drift */
 @keyframes drift {
-  0% { opacity: 0.6; transform: translateX(-50%) translateY(0px); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  0% { opacity: 0.6; transform: translateY(-50%) translateX(0px); }
+  100% { opacity: 0; transform: translateY(-50%) translateX(-20px); }
 }
 
 /* Explosion Animation */
@@ -134,16 +119,11 @@ h1 {
   animation: explosion 0.5s ease-out;
 }
 @keyframes explosion {
-  0% { transform: translateX(-50%) scale(0.5); opacity: 1; }
-  100% { transform: translateX(-50%) scale(1.5); opacity: 0; }
+  0% { transform: translateY(-50%) scale(0.5); opacity: 1; }
+  100% { transform: translateY(-50%) scale(1.5); opacity: 0; }
 }
 
-/* Discount & Status Display */
-#discount-display {
-  font-size: 2em;
-  margin: 20px 0;
-}
-
+/* Status Display */
 #status {
   font-size: 1.2em;
   margin: 10px 0 20px;
@@ -160,13 +140,13 @@ button {
   transition: background 0.3s;
 }
 
-/* Ignite button (red) */
+/* Ignite Button (red) */
 #ignite {
   background: red;
   color: #fff;
 }
 
-/* Cash Out button (green) */
+/* Cash Out Button (green) */
 #cashout {
   background: green;
   color: #fff;
