@@ -95,11 +95,18 @@ h1 {
   background: #fff;
 }
 
+/* Tick labels (default style) */
 .tick-label {
   position: absolute;
   bottom: 10px;
   font-size: 10px;
   color: #fff;
+}
+
+/* Highlighted tick label */
+.tick-label.highlight {
+  font-size: 14px;
+  font-weight: bold;
 }
 
 /* Status Display */
