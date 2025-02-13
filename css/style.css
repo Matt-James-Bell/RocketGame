@@ -69,10 +69,10 @@ h1 {
   z-index: 3;
 }
 
-/* Real-time Discount Display (above the rocket) */
+/* Real-time Discount Display (above the rocket, moved closer) */
 #ship-discount {
   position: absolute;
-  bottom: 90%;  /* Moved closer to the rocket */
+  bottom: 90%;
   left: 50%;
   transform: translateX(-50%);
   font-size: 1em;
@@ -167,22 +167,22 @@ h1 {
   background: red;
 }
 
-/* Total Discount Display (bottom left) */
-#discount-display {
+/* Current Run Discount Display (bottom right) */
+#current-discount {
   position: absolute;
   bottom: 10px;
-  left: 10px;
+  right: 10px;
   font-size: 1.2em;
   background: rgba(0, 0, 0, 0.7);
   padding: 5px 10px;
   border-radius: 4px;
 }
 
-/* Current Run Discount Display (bottom right) */
-#current-discount {
+/* Total Discount Display (bottom left) */
+#discount-display {
   position: absolute;
   bottom: 10px;
-  right: 10px;
+  left: 10px;
   font-size: 1.2em;
   background: rgba(0, 0, 0, 0.7);
   padding: 5px 10px;
@@ -195,7 +195,7 @@ h1 {
   margin: 10px 0 20px;
 }
 
-/* Button Styles (only Cash Out is active) */
+/* Button Styles */
 button {
   padding: 10px 20px;
   font-size: 1em;
@@ -204,6 +204,11 @@ button {
   border: none;
   border-radius: 4px;
   transition: background 0.3s;
+}
+
+#ignite {
+  background: red;
+  color: #fff;
 }
 
 #cashout {
