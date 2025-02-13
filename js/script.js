@@ -3,11 +3,11 @@ let discount = 0.01;
 // Use a slower rate: 0.2% per second so the early range lasts much longer
 const discountRate = 0.2;
 let gameInterval;
-let gameActive = false;
+let gameActive = true;  // Game runs continuously on page load.
 let crashed = false;
 let crashPoint;
 let startTime;
-// Accumulated discount (resets to 0 on crash)
+// Accumulated discount (winnings from cashed-out runs)
 let accumulatedDiscount = 0;
 
 /**
@@ -25,12 +25,11 @@ function mapDiscountToNormalized(d) {
 }
 
 /**
- * Update the bottom tick scale.
- * The scale is dynamic—it shows only the tick marks for the current window:
+ * Update the bottom tick scale (horizontal).
+ * The scale shows tick marks for the current dynamic window:
  * - If discount < 2: window = [0.01, 2.00].
  * - If discount >= 2: window = [discount*0.8, discount*1.2] (clamped to [2.00, 100.00]).
- * Tick marks are drawn linearly across the container width.
- * The red marker is positioned at the rocket's center (it stays with the rocket).
+ * The red marker remains at the rocket's center.
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
@@ -80,11 +79,10 @@ function updateBottomScale() {
 }
 
 /**
- * Update the vertical ticker on the right side.
- * It uses the same dynamic window as the bottom scale.
- * Tick marks and labels are drawn linearly across the container height,
- * and the red marker is positioned at the rocket's center Y.
- * The vertical tick marks are made smaller.
+ * Update the vertical ticker (right side).
+ * Uses the same dynamic window as the bottom scale.
+ * Draws tick marks and labels along the container height,
+ * and positions a red marker at the rocket's center Y.
  */
 function updateVerticalTicker() {
   const verticalTicker = document.getElementById("vertical-ticker");
@@ -135,8 +133,8 @@ function updateVerticalTicker() {
 
 /**
  * Update the rocket's position.
- * - Until discount reaches 1%, the rocket moves normally (using dynamic window mapping).
- * - Once discount ≥ 1%, the rocket stops moving and remains fixed at the center.
+ * - Before discount reaches 1%, the rocket moves using dynamic window mapping.
+ * - Once discount ≥ 1%, the rocket remains fixed at the center.
  */
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
@@ -147,7 +145,7 @@ function updateRocketPosition() {
   const wrapperHeight = rocketWrapper.offsetHeight;
   
   if (discount < 1.0) {
-    // Before 1%, use dynamic mapping.
+    // Dynamic movement before 1%
     let windowMin, windowMax;
     if (discount < 2.00) {
       windowMin = 0.01;
@@ -158,8 +156,10 @@ function updateRocketPosition() {
       if (windowMin < 2.00) windowMin = 2.00;
       if (windowMax > 100.00) windowMax = 100.00;
     }
+    // Vertical position using global mapping.
     let normalizedVert = mapDiscountToNormalized(discount);
     let newBottom = normalizedVert * (containerHeight - wrapperHeight);
+    // Horizontal position using dynamic window mapping.
     let normalizedHoriz = (discount - windowMin) / (windowMax - windowMin);
     let markerPos = normalizedHoriz * containerWidth;
     let newLeft = markerPos - wrapperWidth / 2;
@@ -167,7 +167,7 @@ function updateRocketPosition() {
     rocketWrapper.style.left = newLeft + "px";
     rocketWrapper.style.bottom = newBottom + "px";
   } else {
-    // Once discount ≥ 1%, fix the rocket at the center.
+    // Once discount >= 1%, fix the rocket at the center.
     let centerX = (containerWidth - wrapperWidth) / 2;
     let centerY = (containerHeight - wrapperHeight) / 2;
     rocketWrapper.style.left = centerX + "px";
@@ -177,33 +177,30 @@ function updateRocketPosition() {
 
 /**
  * Update the real-time discount display (above the rocket).
+ * Also update the "Current Run" box on the top right.
  */
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
+  document.getElementById("current-run").textContent = "Current Run: " + discount.toFixed(2) + "%";
 }
 
 /**
- * Start (Ignite) the game.
- * - Resets discount to 0.01%.
- * - Disables the ignite button during a run.
- * - Determines a crash point with weighted probabilities:
- *    • 10% chance: crash between 0.01% and 0.05%.
- *    • 80% chance: crash between 1.00% and 3.00%.
- *    • 10% chance: crash between 3.00% and 100.00%.
- * - Runs only when the player clicks Ignite.
+ * Start (or restart) the game.
+ * The game now runs continuously (auto-start on page load and after each run).
+ * The player can click "Cash Out" to lock in the run's discount.
  */
 function startGame() {
-  if (gameActive) return;
-  
+  // Continuous run: always start a new run.
   discount = 0.01;
   crashed = false;
   gameActive = true;
   startTime = Date.now();
   updateDisplay();
-  document.getElementById("status").textContent = "Game in progress... Press Cash Out anytime!";
-  document.getElementById("cashout").disabled = false;
-  document.getElementById("ignite").disabled = true;
   
+  // Enable cash out button.
+  document.getElementById("cashout").disabled = false;
+  
+  // Show rocket and hide explosion.
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
@@ -211,13 +208,14 @@ function startGame() {
   updateBottomScale();
   updateVerticalTicker();
   
+  // Determine crash point with weighted probability.
   let r = Math.random();
   if (r < 0.1) {
-    crashPoint = Math.random() * (0.05 - 0.01) + 0.01;
+    crashPoint = Math.random() * (0.05 - 0.01) + 0.01;   // 10%: [0.01, 0.05]
   } else if (r < 0.9) {
-    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;
+    crashPoint = Math.random() * (3.00 - 1.00) + 1.00;    // 80%: [1.00, 3.00]
   } else {
-    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;
+    crashPoint = Math.random() * (100.00 - 3.00) + 3.00;   // 10%: [3.00, 100.00]
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
   
@@ -226,9 +224,9 @@ function startGame() {
 
 /**
  * Update game state on each tick.
- * Now, once the discount reaches 1%, the rocket stops moving (stays centered)
- * while the discount value continues to increase (and tick bars update).
- * Additionally, once Cash Out is hit, the final discount is displayed in green above the rocket.
+ * The discount increases continuously.
+ * Once the discount reaches 1%, the rocket remains fixed at the center.
+ * Tick bars update dynamically.
  */
 function updateGame() {
   if (!gameActive) return;
@@ -252,7 +250,7 @@ function updateGame() {
  * - Stops the run.
  * - Resets accumulated discount to 0.
  * - Displays an explosion.
- * - The run ends; the player must click Ignite for a new run.
+ * - The run ends; a new run auto-starts after 2 seconds.
  */
 function crash() {
   gameActive = false;
@@ -271,15 +269,15 @@ function crash() {
   explosionElem.classList.add("explode");
   
   document.getElementById("status").textContent = "Crashed! You lost your total discount.";
-  document.getElementById("cashout").disabled = true;
-  document.getElementById("ignite").disabled = false;
+  
+  setTimeout(startGame, 2000);
 }
 
 /**
  * Handle Cash Out.
  * - Locks in the current discount (adds it to accumulatedDiscount).
  * - Displays the final discount above the rocket in green.
- * - The run ends; the player must click Ignite for a new run.
+ * - The run ends; a new run auto-starts after 2 seconds.
  */
 function cashOut() {
   if (!gameActive || crashed) return;
@@ -288,35 +286,34 @@ function cashOut() {
   clearInterval(gameInterval);
   updateDisplay();
   document.getElementById("status").textContent = "Cashed out at " + discount.toFixed(2) + "% discount!";
-  document.getElementById("cashout").disabled = true;
-  document.getElementById("ignite").disabled = false;
   
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
   
-  // Change discount display color to green for cash out.
+  // Display cash-out result in green above the rocket.
   document.getElementById("ship-discount").style.color = "green";
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
+  
+  setTimeout(startGame, 2000);
 }
 
 /**
  * Update the accumulated discount display.
  */
 function updateAccumulatedDiscount() {
-  document.getElementById("discount-display").textContent = "Discount: " + accumulatedDiscount.toFixed(2) + "%";
+  document.getElementById("discount-display").textContent = "Total Discount: " + accumulatedDiscount.toFixed(2) + "%";
 }
 
-// Update tick scales on window resize.
+// Ensure tick scales update on window resize.
 window.addEventListener("resize", () => {
   updateBottomScale();
   updateVerticalTicker();
 });
 window.addEventListener("load", () => {
-  updateBottomScale();
-  updateVerticalTicker();
+  // Auto-start the game on page load.
+  startGame();
 });
 
-// Button event listeners.
-document.getElementById("ignite").addEventListener("click", startGame);
+// Button event listener for Cash Out.
 document.getElementById("cashout").addEventListener("click", cashOut);
