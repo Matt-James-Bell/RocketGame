@@ -13,7 +13,7 @@
     
     <!-- Rocket Container with space background -->
     <div id="rocket-container">
-      <!-- Rocket Wrapper for diagonal movement -->
+      <!-- Rocket Wrapper for movement -->
       <div id="rocket-wrapper">
         <img id="rocket" src="img/rocket.png" alt="Rocket">
         <!-- Current discount display above the rocket -->
@@ -23,7 +23,7 @@
       <!-- Explosion graphic (hidden by default) -->
       <img id="explosion" src="img/explosion.png" alt="Explosion">
       
-      <!-- Bottom Scale (horizontal ruler) -->
+      <!-- Bottom Scale (dynamic horizontal ruler) -->
       <div id="bottom-scale"></div>
     </div>
     
@@ -33,7 +33,7 @@
     <button id="ignite">Ignite</button>
     <button id="cashout" disabled>Cash Out</button>
     
-    <!-- Accumulated Discount Display (renamed from "Balance") -->
+    <!-- Accumulated Discount Display (losing total discount on crash) -->
     <div id="discount-display">Discount: 0.00%</div>
   </div>
   <script src="js/script.js"></script>
