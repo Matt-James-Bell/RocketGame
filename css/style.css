@@ -12,7 +12,7 @@ body {
 
 h1 {
   margin-bottom: 20px;
-  font-size: 2.8em;
+  font-size: 2.0em; /* Reduced from 2.8em */
   color: #fff;
   text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
 }
