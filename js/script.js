@@ -1,19 +1,19 @@
 // The dynamic discount starts at 0.01%
 let discount = 0.01;
-// Use a linear growth rate: 0.2% per second for the early range
+// Growth rate: 0.2% per second (linear for the early range)
 const discountRate = 0.2;
 let gameInterval;
 let gameActive = false;
 let crashed = false;
 let crashPoint;
 let startTime;
-// Accumulated discount (winnings from previous runs)
+// Accumulated discount from cashed-out runs
 let accumulatedDiscount = 0;
 
 /**
- * Global mapping function (piecewise linear) for vertical positioning.
- * For d <= 2.00: returns a value from 0 to 0.3.
- * For d > 2.00: returns a value from 0.3 to 1.
+ * Global mapping function for vertical positioning.
+ * For d <= 2: returns a value from 0 to 0.3.
+ * For d > 2: returns a value from 0.3 to 1.
  */
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -25,10 +25,6 @@ function mapDiscountToNormalized(d) {
 
 /**
  * Update the bottom tick scale (horizontal).
- * Displays tick marks for the current dynamic window:
- * - If discount < 2: window = [0.01, 2.00]
- * - If discount >= 2: window = [discount * 0.8, discount * 1.2] (clamped to [2.00, 100.00])
- * Tick labels move dynamically; the red marker is positioned at the rocket's center.
  */
 function updateBottomScale() {
   const bottomScale = document.getElementById("bottom-scale");
@@ -64,7 +60,7 @@ function updateBottomScale() {
     bottomScale.appendChild(label);
   }
   
-  // Place the red marker at the rocket's center X.
+  // Align the red marker with the rocket's center X.
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const container = document.getElementById("rocket-container");
   const rocketRect = rocketWrapper.getBoundingClientRect();
@@ -79,9 +75,9 @@ function updateBottomScale() {
 
 /**
  * Update the vertical ticker (right side).
- * Uses the same dynamic window as the bottom tick scale.
+ * Uses the same dynamic window as the bottom tick bar.
  * Tick marks and labels are drawn along the container height.
- * The red marker is positioned based on the rocket-wrapper's offsetTop.
+ * The red marker is positioned using the rocket-wrapper's offsetTop.
  */
 function updateVerticalTicker() {
   const verticalTicker = document.getElementById("vertical-ticker");
@@ -118,7 +114,7 @@ function updateVerticalTicker() {
     verticalTicker.appendChild(label);
   }
   
-  // Use rocket-wrapper.offsetTop (relative to container) for smooth tracking.
+  // Position the red marker at the rocket's center Y using offsetTop (relative to container).
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const rocketCenterY = rocketWrapper.offsetTop + rocketWrapper.offsetHeight / 2;
   
@@ -130,8 +126,8 @@ function updateVerticalTicker() {
 
 /**
  * Update the rocket's position.
- * For discount < 1, smoothly interpolate from starting position to the center.
- * At discount >= 1, the rocket remains fixed at the center.
+ * Before discount reaches 1, it moves based on interpolation from a starting position to the center.
+ * Once discount >= 1, the rocket stays at the center.
  */
 function updateRocketPosition() {
   const container = document.getElementById("rocket-container");
@@ -141,14 +137,13 @@ function updateRocketPosition() {
   const wrapperWidth = rocketWrapper.offsetWidth;
   const wrapperHeight = rocketWrapper.offsetHeight;
   
-  // Define center position.
+  // Define center coordinates.
   let centerX = (containerWidth - wrapperWidth) / 2;
   let centerY = (containerHeight - wrapperHeight) / 2;
   
-  // We want a smooth linear interpolation from the start position to the center as discount goes from 0.01 to 1.
+  // If discount < 1, interpolate from start (assumed bottom-left, i.e., (0,0)) to center.
   if (discount < 1.0) {
-    // At discount 0.01, we assume starting position is at (0, 0) (clamped)
-    let t = (discount - 0.01) / (1 - 0.01);
+    let t = (discount - 0.01) / (1 - 0.01); // t goes from 0 at discount 0.01 to 1 at discount 1.
     let newLeft = (1 - t) * 0 + t * centerX;
     let newBottom = (1 - t) * 0 + t * centerY;
     rocketWrapper.style.left = newLeft + "px";
@@ -160,8 +155,7 @@ function updateRocketPosition() {
 }
 
 /**
- * Update the real-time discount display (above the rocket)
- * and the current run discount display (bottom right).
+ * Update the discount display.
  */
 function updateDisplay() {
   document.getElementById("ship-discount").textContent = discount.toFixed(2) + "% Discount";
@@ -181,9 +175,9 @@ function startGame() {
   document.getElementById("cashout").disabled = false;
   document.getElementById("ignite").disabled = true;
   
-  document.getElementById("rocket-wrapper").style.display = "block";
+  // Hide explosion.
   document.getElementById("explosion").style.display = "none";
-  
+  // We don't animate a reset here; the rocket will smoothly move from its current position.
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
@@ -202,7 +196,7 @@ function startGame() {
 }
 
 /**
- * Update game state on each tick.
+ * Update the game state.
  */
 function updateGame() {
   if (!gameActive) return;
@@ -264,7 +258,6 @@ function cashOut() {
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
   
-  // Change the discount display above the rocket to green.
   document.getElementById("ship-discount").style.color = "green";
   
   alert("Congratulations! You've earned a " + discount.toFixed(2) + "% discount!");
