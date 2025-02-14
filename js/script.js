@@ -9,7 +9,7 @@ let startTime;
 let accumulatedDiscount = 0;
 let playerJoined = false;
 let countdownInterval;
-let firstRun = true; // First run: 10 sec; then 5 sec
+let firstRun = true; // First run: 10 sec; subsequent: 5 sec
 
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -102,6 +102,7 @@ function updateRocketPosition() {
   const wrapperHeight = rocketWrapper.offsetHeight;
   let centerX = (containerWidth - wrapperWidth) / 2;
   let centerY = (containerHeight - wrapperHeight) / 2;
+  
   if (discount < 1.0) {
     let t = (discount - 0.01) / (1 - 0.01);
     let newLeft = (1 - t) * 0 + t * centerX;
@@ -123,7 +124,6 @@ function startGame() {
   discount = 0.01;
   crashed = false;
   gameActive = true;
-  // Do not override playerJoined if already set by Ignite.
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
@@ -159,10 +159,12 @@ function updateGame() {
   let elapsed = (Date.now() - startTime) / 1000;
   discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
+  
   updateDisplay();
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
+  
   if (discount >= crashPoint) {
     crash();
   }
@@ -199,7 +201,7 @@ function cashOut() {
   document.getElementById("ignite").disabled = true;
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
-  document.getElementById("ship-discount").style.color = "#fff"; // Keep text white
+  document.getElementById("ship-discount").style.color = "#fff";
   document.getElementById("status").textContent += " Congratulations!";
   setTimeout(startCountdown, 2000);
 }
