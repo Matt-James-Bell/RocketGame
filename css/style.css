@@ -25,13 +25,13 @@ h1 {
   position: relative;
 }
 
-/* Rocket Container with background space3.jpg */
+/* Rocket Container with background space4.jpg */
 #rocket-container {
   position: relative;
   width: 100%;
   height: 600px;
   margin-bottom: 20px;
-  background: url('../img/space3.jpg') no-repeat center center;
+  background: url('../img/space4.jpg') no-repeat center center;
   background-size: cover;
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: 8px;
@@ -119,7 +119,7 @@ h1 {
   background: red;
 }
 
-/* Vertical Ticker */
+/* Vertical Ticker (right side) */
 #vertical-ticker {
   position: absolute;
   top: 0;
