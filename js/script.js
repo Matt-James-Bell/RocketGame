@@ -175,12 +175,10 @@ function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
-  
   if (playerJoined) {
     accumulatedDiscount = 0;
     updateAccumulatedDiscount();
   }
-  
   const rocketWrapper = document.getElementById("rocket-wrapper");
   rocketWrapper.style.display = "none";
   const explosionElem = document.getElementById("explosion");
@@ -188,11 +186,9 @@ function crash() {
   explosionElem.style.bottom = rocketWrapper.style.bottom;
   explosionElem.style.display = "block";
   explosionElem.classList.add("explode");
-  
   document.getElementById("status").textContent = "Run crashed!";
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = true;
-  
   setTimeout(startCountdown, 2000);
 }
 
