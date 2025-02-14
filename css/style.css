@@ -40,14 +40,13 @@ h1 {
   z-index: 100;
 }
 
-/* Rocket Container with background space6.jpg (darkened) */
+/* Rocket Container with background space5.jpg (darkened) */
 #rocket-container {
   position: relative;
   width: 100%;
   height: 600px;
   margin-bottom: 20px;
-  /* Dark overlay added via linear-gradient */
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/space6.jpg') no-repeat center center;
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/space5.jpg') no-repeat center center;
   background-size: cover;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: 12px;
@@ -223,7 +222,7 @@ h1 {
   color: #ddd;
 }
 
-/* Button Styles - making the entire area clickable */
+/* Button Styles - ensuring entire button is clickable */
 button {
   display: inline-flex;
   align-items: center;
