@@ -1,31 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
 /* Global Styles */
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   text-align: center;
-  background: #0d0d0d;
-  color: #fff;
+  background: radial-gradient(ellipse at center, #0f2027, #203a43, #2c5364);
+  color: #e0e0e0;
   margin: 0;
   padding: 20px;
 }
 
 h1 {
   margin-bottom: 20px;
-  font-size: 2.5em;
+  font-size: 2.8em;
+  color: #fff;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
 }
 
 /* Game Container */
 #game-container {
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.8);
   max-width: 800px;
   margin: 0 auto;
   position: relative;
 }
 
-/* Rocket Container with background space4.jpg */
+/* Rocket Container with space4.jpg background */
 #rocket-container {
   position: relative;
   width: 100%;
@@ -33,18 +37,20 @@ h1 {
   margin-bottom: 20px;
   background: url('../img/space4.jpg') no-repeat center center;
   background-size: cover;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.7);
 }
 
-/* Rocket Wrapper – its center is aligned dynamically */
+/* Rocket Wrapper */
 #rocket-wrapper {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 150px;
   height: 200px;
+  transition: left 0.2s ease, bottom 0.2s ease;
 }
 
 /* Rocket Image */
@@ -55,9 +61,10 @@ h1 {
   transform: translateX(-50%);
   width: 100px;
   z-index: 3;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.7));
 }
 
-/* Real-time Discount Display (above the rocket) */
+/* Real-time Discount Display above Rocket */
 #ship-discount {
   position: absolute;
   bottom: 90%;
@@ -65,6 +72,8 @@ h1 {
   transform: translateX(-50%);
   font-size: 1em;
   margin-bottom: 2px;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
 /* Explosion Image */
@@ -85,9 +94,10 @@ h1 {
   width: 100%;
   height: 30px;
   border-top: 1px solid #fff;
+  background: rgba(0,0,0,0.4);
 }
 
-/* Tick marks for bottom bar */
+/* Tick Marks for Bottom Bar */
 .tick {
   position: absolute;
   bottom: 0;
@@ -96,7 +106,7 @@ h1 {
   background: #fff;
 }
 
-/* Tick labels for bottom bar */
+/* Tick Labels for Bottom Bar */
 .tick-label {
   position: absolute;
   bottom: 10px;
@@ -104,13 +114,13 @@ h1 {
   color: #fff;
 }
 
-/* Highlighted tick label for bottom bar */
+/* Highlighted Tick Label */
 .tick-label.highlight {
   font-size: 14px;
   font-weight: bold;
 }
 
-/* Red marker for bottom bar */
+/* Red Marker for Bottom Bar */
 .tick-marker {
   position: absolute;
   bottom: 0;
@@ -119,7 +129,7 @@ h1 {
   background: red;
 }
 
-/* Vertical Ticker (right side) */
+/* Vertical Ticker */
 #vertical-ticker {
   position: absolute;
   top: 0;
@@ -127,9 +137,10 @@ h1 {
   width: 40px;
   height: 100%;
   border-left: 1px solid #fff;
+  background: rgba(0,0,0,0.4);
 }
 
-/* Vertical tick marks (smaller) */
+/* Vertical Tick Marks (smaller) */
 .v-tick {
   position: absolute;
   left: 0;
@@ -138,7 +149,7 @@ h1 {
   background: #fff;
 }
 
-/* Vertical tick labels */
+/* Vertical Tick Labels */
 .v-tick-label {
   position: absolute;
   left: 10px;
@@ -146,7 +157,7 @@ h1 {
   color: #fff;
 }
 
-/* Red marker for vertical ticker */
+/* Red Marker for Vertical Ticker */
 .v-tick-marker {
   position: absolute;
   left: 0;
@@ -161,7 +172,7 @@ h1 {
   bottom: 10px;
   right: 10px;
   font-size: 1.2em;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   padding: 5px 10px;
   border-radius: 4px;
 }
@@ -172,7 +183,7 @@ h1 {
   bottom: 10px;
   left: 10px;
   font-size: 1.2em;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   padding: 5px 10px;
   border-radius: 4px;
 }
@@ -181,6 +192,7 @@ h1 {
 #status {
   font-size: 1.2em;
   margin: 10px 0 20px;
+  color: #ddd;
 }
 
 /* Button Styles */
@@ -191,21 +203,23 @@ button {
   cursor: pointer;
   border: none;
   border-radius: 4px;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
 #ignite {
-  background: red;
+  background: #ff3b3f;
   color: #fff;
 }
 
 #cashout {
-  background: green;
+  background: #00c851;
   color: #fff;
 }
 
 button:hover:not(:disabled) {
   opacity: 0.9;
+  transform: scale(1.05);
 }
 
 button:disabled {
