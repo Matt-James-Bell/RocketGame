@@ -102,7 +102,6 @@ function updateRocketPosition() {
   const wrapperHeight = rocketWrapper.offsetHeight;
   let centerX = (containerWidth - wrapperWidth) / 2;
   let centerY = (containerHeight - wrapperHeight) / 2;
-  
   if (discount < 1.0) {
     let t = (discount - 0.01) / (1 - 0.01);
     let newLeft = (1 - t) * 0 + t * centerX;
@@ -124,7 +123,7 @@ function startGame() {
   discount = 0.01;
   crashed = false;
   gameActive = true;
-  // Do not override playerJoined (set via Ignite during countdown).
+  // Do not override playerJoined (set via Ignite during countdown)
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
@@ -134,14 +133,11 @@ function startGame() {
     document.getElementById("cashout").disabled = true;
   }
   document.getElementById("ignite").disabled = true;
-  
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
-  
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
-  
   let r = Math.random();
   if (r < 0.1) {
     crashPoint = Math.random() * (0.05 - 0.01) + 0.01;
@@ -151,7 +147,6 @@ function startGame() {
     crashPoint = Math.random() * (100.00 - 3.00) + 3.00;
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
-  
   gameInterval = setInterval(updateGame, 50);
 }
 
@@ -160,12 +155,10 @@ function updateGame() {
   let elapsed = (Date.now() - startTime) / 1000;
   discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
-  
   updateDisplay();
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
-  
   if (discount >= crashPoint) {
     crash();
   }
@@ -249,4 +242,5 @@ document.getElementById("ignite").addEventListener("click", () => {
   playerJoined = true;
   startRun();
 });
+
 document.getElementById("cashout").addEventListener("click", cashOut);
