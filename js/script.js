@@ -9,7 +9,7 @@ let startTime;
 let accumulatedDiscount = 0;
 let playerJoined = false;
 let countdownInterval;
-let firstRun = true; // first run: 10 sec; subsequent: 5 sec
+let firstRun = true; // First run uses a 10-second countdown; subsequent runs use 5 seconds
 
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -89,7 +89,7 @@ function updateVerticalTicker() {
     label.style.top = (topPos - 5) + "px";
     verticalTicker.appendChild(label);
   }
-  // Position the red marker exactly at the rocket's center Y using offsetTop.
+  // Position the red marker using rocket-wrapper.offsetTop.
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const rocketCenterY = rocketWrapper.offsetTop + rocketWrapper.offsetHeight / 2;
   const marker = document.createElement("div");
@@ -128,7 +128,7 @@ function startGame() {
   discount = 0.01;
   crashed = false;
   gameActive = true;
-  // Do not override playerJoined; if the player did not click Ignite during the countdown, it remains false.
+  // Do not override playerJoined (it is set during countdown if player clicks Ignite)
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
@@ -161,16 +161,13 @@ function startGame() {
 
 function updateGame() {
   if (!gameActive) return;
-  
   let elapsed = (Date.now() - startTime) / 1000;
   discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
-  
   updateDisplay();
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
-  
   if (discount >= crashPoint) {
     crash();
   }
@@ -180,44 +177,36 @@ function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
-  
   if (playerJoined) {
     accumulatedDiscount = 0;
     updateAccumulatedDiscount();
   }
-  
   const rocketWrapper = document.getElementById("rocket-wrapper");
   rocketWrapper.style.display = "none";
-  
   const explosionElem = document.getElementById("explosion");
   explosionElem.style.left = rocketWrapper.style.left;
   explosionElem.style.bottom = rocketWrapper.style.bottom;
   explosionElem.style.display = "block";
   explosionElem.classList.add("explode");
-  
   document.getElementById("status").textContent = "Run crashed!";
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = true;
-  
   setTimeout(startCountdown, 2000);
 }
 
 function cashOut() {
   if (!gameActive || crashed || !playerJoined) return;
-  
   gameActive = false;
   clearInterval(gameInterval);
   updateDisplay();
   document.getElementById("status").textContent = "Cashed out at " + discount.toFixed(2) + "% discount!";
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = true;
-  
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
-  
-  document.getElementById("ship-discount").style.color = "green";
+  // Do not change text color to green; keep it white.
+  document.getElementById("ship-discount").style.color = "#fff";
   document.getElementById("status").textContent += " Congratulations!";
-  
   setTimeout(startCountdown, 2000);
 }
 
@@ -226,14 +215,12 @@ function updateAccumulatedDiscount() {
 }
 
 function startCountdown() {
-  // Reset playerJoined for new run.
+  // Reset playerJoined flag for new run.
   playerJoined = false;
-  
   const countdownDiv = document.getElementById("countdown");
   let duration = firstRun ? 10 : 5;
   countdownDiv.style.display = "block";
   countdownDiv.textContent = duration;
-  
   // Enable Ignite button during countdown.
   document.getElementById("ignite").disabled = false;
   
