@@ -102,6 +102,7 @@ function updateRocketPosition() {
   const wrapperHeight = rocketWrapper.offsetHeight;
   let centerX = (containerWidth - wrapperWidth) / 2;
   let centerY = (containerHeight - wrapperHeight) / 2;
+  
   if (discount < 1.0) {
     let t = (discount - 0.01) / (1 - 0.01);
     let newLeft = (1 - t) * 0 + t * centerX;
@@ -133,11 +134,14 @@ function startGame() {
     document.getElementById("cashout").disabled = true;
   }
   document.getElementById("ignite").disabled = true;
+  
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
+  
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
+  
   let r = Math.random();
   if (r < 0.1) {
     crashPoint = Math.random() * (0.05 - 0.01) + 0.01;
@@ -147,6 +151,7 @@ function startGame() {
     crashPoint = Math.random() * (100.00 - 3.00) + 3.00;
   }
   console.log("Crash point set at: " + crashPoint.toFixed(2) + "%");
+  
   gameInterval = setInterval(updateGame, 50);
 }
 
@@ -155,10 +160,12 @@ function updateGame() {
   let elapsed = (Date.now() - startTime) / 1000;
   discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
+  
   updateDisplay();
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
+  
   if (discount >= crashPoint) {
     crash();
   }
@@ -168,10 +175,12 @@ function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
+  
   if (playerJoined) {
     accumulatedDiscount = 0;
     updateAccumulatedDiscount();
   }
+  
   const rocketWrapper = document.getElementById("rocket-wrapper");
   rocketWrapper.style.display = "none";
   const explosionElem = document.getElementById("explosion");
@@ -179,9 +188,11 @@ function crash() {
   explosionElem.style.bottom = rocketWrapper.style.bottom;
   explosionElem.style.display = "block";
   explosionElem.classList.add("explode");
+  
   document.getElementById("status").textContent = "Run crashed!";
   document.getElementById("cashout").disabled = true;
   document.getElementById("ignite").disabled = true;
+  
   setTimeout(startCountdown, 2000);
 }
 
@@ -242,5 +253,4 @@ document.getElementById("ignite").addEventListener("click", () => {
   playerJoined = true;
   startRun();
 });
-
 document.getElementById("cashout").addEventListener("click", cashOut);
