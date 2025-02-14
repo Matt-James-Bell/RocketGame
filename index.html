@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <title>Space Quest Adventures Discount Game</title>
   <!-- Using a clean, readable font -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="game-container">
     <h1>Space Quest Adventures Discount Game</h1>
     
-    <!-- Rocket Container with space3.jpg background -->
+    <!-- Rocket Container with background space4.jpg -->
     <div id="rocket-container">
       <!-- Rocket Wrapper for movement -->
       <div id="rocket-wrapper">
@@ -28,9 +28,6 @@
       
       <!-- Dynamic Vertical Ticker -->
       <div id="vertical-ticker"></div>
-      
-      <!-- Current Run Discount Display (bottom right) -->
-      <div id="current-discount">Current: 0.00%</div>
     </div>
     
     <div id="status">Click "Ignite" to launch the rocket.</div>
@@ -39,8 +36,11 @@
     <button id="ignite">Ignite</button>
     <button id="cashout" disabled>Cash Out</button>
     
-    <!-- Total Discount Display (bottom left) -->
-    <div id="discount-display">Total Discount: 0.00%</div>
+    <!-- Bottom Info Container for Total and Current Discounts -->
+    <div id="bottom-info">
+      <div id="discount-display">Total Discount: 0.00%</div>
+      <div id="current-discount">Current: 0.00%</div>
+    </div>
   </div>
   <script src="js/script.js"></script>
 </body>
