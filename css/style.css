@@ -12,7 +12,7 @@ body {
 
 h1 {
   margin-bottom: 20px;
-  font-size: 2.0em; /* Reduced from 2.8em */
+  font-size: 2.0em; /* Smaller title */
   color: #fff;
   text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
 }
@@ -78,7 +78,7 @@ h1 {
 /* Real-time Discount Display above Rocket */
 #ship-discount {
   position: absolute;
-  bottom: 80%;  /* Moved closer to the rocket */
+  bottom: 80%; /* Moved closer to the rocket */
   left: 50%;
   transform: translateX(-50%);
   font-size: 1em;
