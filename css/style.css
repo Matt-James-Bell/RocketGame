@@ -14,19 +14,30 @@ h1 {
   margin-bottom: 20px;
   font-size: 2.8em;
   color: #fff;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
 }
 
 /* Game Container */
 #game-container {
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0,0,0,0.5);
+  border: 2px solid rgba(255,255,255,0.3);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.8);
   max-width: 800px;
   margin: 0 auto;
   position: relative;
+}
+
+/* Countdown Display */
+#countdown {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  color: yellow;
+  z-index: 100;
 }
 
 /* Rocket Container with background space4.jpg */
@@ -37,13 +48,13 @@ h1 {
   margin-bottom: 20px;
   background: url('../img/space4.jpg') no-repeat center center;
   background-size: cover;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255,255,255,0.3);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: inset 0 0 15px rgba(0,0,0,0.7);
 }
 
-/* Rocket Wrapper – its center is aligned dynamically */
+/* Rocket Wrapper */
 #rocket-wrapper {
   position: absolute;
   left: 0;
@@ -56,7 +67,7 @@ h1 {
 /* Rocket Image */
 #rocket {
   position: absolute;
-  bottom: 50px; /* Leaves space for discount display */
+  bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
   width: 100px;
@@ -97,7 +108,7 @@ h1 {
   background: rgba(0,0,0,0.4);
 }
 
-/* Tick marks for bottom bar */
+/* Tick Marks */
 .tick {
   position: absolute;
   bottom: 0;
@@ -106,7 +117,7 @@ h1 {
   background: #fff;
 }
 
-/* Tick labels for bottom bar */
+/* Tick Labels */
 .tick-label {
   position: absolute;
   bottom: 10px;
@@ -114,13 +125,13 @@ h1 {
   color: #fff;
 }
 
-/* Highlighted tick label for bottom bar */
+/* Highlighted Tick Label */
 .tick-label.highlight {
   font-size: 14px;
   font-weight: bold;
 }
 
-/* Red marker for bottom bar */
+/* Red Marker for Bottom Tick Bar */
 .tick-marker {
   position: absolute;
   bottom: 0;
@@ -140,7 +151,7 @@ h1 {
   background: rgba(0,0,0,0.4);
 }
 
-/* Vertical tick marks (smaller) */
+/* Vertical Tick Marks */
 .v-tick {
   position: absolute;
   left: 0;
@@ -149,7 +160,7 @@ h1 {
   background: #fff;
 }
 
-/* Vertical tick labels */
+/* Vertical Tick Labels */
 .v-tick-label {
   position: absolute;
   left: 10px;
@@ -157,7 +168,7 @@ h1 {
   color: #fff;
 }
 
-/* Red marker for vertical ticker */
+/* Red Marker for Vertical Ticker */
 .v-tick-marker {
   position: absolute;
   left: 0;
@@ -166,7 +177,7 @@ h1 {
   background: red;
 }
 
-/* Bottom Info Container for Total and Current Displays */
+/* Bottom Info Container */
 #bottom-info {
   display: flex;
   justify-content: space-between;
@@ -180,7 +191,7 @@ h1 {
 /* Total Discount Display (bottom left) */
 #discount-display {
   font-size: 1.2em;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0,0,0,0.7);
   padding: 5px 10px;
   border-radius: 4px;
 }
@@ -188,7 +199,7 @@ h1 {
 /* Current Run Discount Display (bottom right) */
 #current-discount {
   font-size: 1.2em;
-  background: rgba(0, 200, 200, 0.8);
+  background: rgba(0,200,200,0.8);
   color: #fff;
   padding: 8px 12px;
   border-radius: 8px;
