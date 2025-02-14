@@ -124,7 +124,7 @@ function startGame() {
   discount = 0.01;
   crashed = false;
   gameActive = true;
-  // Do not override playerJoined if already set by Ignite during countdown.
+  // Do not override playerJoined (set via Ignite during countdown).
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
@@ -160,10 +160,12 @@ function updateGame() {
   let elapsed = (Date.now() - startTime) / 1000;
   discount = 0.01 + elapsed * discountRate;
   if (discount > 100) discount = 100;
+  
   updateDisplay();
   updateRocketPosition();
   updateBottomScale();
   updateVerticalTicker();
+  
   if (discount >= crashPoint) {
     crash();
   }
@@ -247,5 +249,4 @@ document.getElementById("ignite").addEventListener("click", () => {
   playerJoined = true;
   startRun();
 });
-
 document.getElementById("cashout").addEventListener("click", cashOut);
