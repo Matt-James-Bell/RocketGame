@@ -177,11 +177,11 @@ h1 {
   background: red;
 }
 
-/* Button Container - display buttons side by side */
+/* Button Container - side by side */
 #button-container {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 10px; /* Reduced gap for closer buttons */
   margin: 10px 0;
 }
 
@@ -207,8 +207,9 @@ h1 {
 /* Current Run Discount Display (bottom right) */
 #current-discount {
   font-size: 1.2em;
-  background: rgba(0,200,200,0.8);
-  color: #fff;
+  background: #000; /* Black background */
+  color: #90ee90; /* Light green font */
+  border: 1px solid #90ee90; /* Light green outline */
   padding: 8px 12px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
