@@ -37,7 +37,7 @@ h1 {
   margin-bottom: 20px;
   background: url('../img/space4.jpg') no-repeat center center;
   background-size: cover;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: inset 0 0 15px rgba(0,0,0,0.7);
@@ -166,28 +166,33 @@ h1 {
   background: red;
 }
 
-/* Current Run Discount Display (bottom right) */
-#current-discount {
+/* Bottom Info Container for Total and Current Displays */
+#bottom-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: absolute;
   bottom: 10px;
+  left: 10px;
   right: 10px;
+}
+
+/* Total Discount Display (bottom left) */
+#discount-display {
+  font-size: 1.2em;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+/* Current Run Discount Display (bottom right) */
+#current-discount {
   font-size: 1.2em;
   background: rgba(0, 200, 200, 0.8);
   color: #fff;
   padding: 8px 12px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-
-/* Total Discount Display (bottom left) */
-#discount-display {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  font-size: 1.2em;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 5px 10px;
-  border-radius: 4px;
 }
 
 /* Status Display */
