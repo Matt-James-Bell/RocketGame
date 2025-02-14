@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Space Quest Adventures Discount Game</title>
-  <!-- Using a clean, readable font -->
+  <!-- Using Open Sans for readability -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,32 +11,27 @@
   <div id="game-container">
     <h1>Space Quest Adventures Discount Game</h1>
     
+    <!-- Countdown display -->
+    <div id="countdown">10</div>
+    
     <!-- Rocket Container with background space4.jpg -->
     <div id="rocket-container">
-      <!-- Rocket Wrapper for movement -->
       <div id="rocket-wrapper">
         <img id="rocket" src="img/rocket.png" alt="Rocket">
-        <!-- Real-time discount display above the rocket -->
         <div id="ship-discount">0.01% Discount</div>
       </div>
-      
-      <!-- Explosion graphic (hidden by default) -->
       <img id="explosion" src="img/explosion.png" alt="Explosion">
-      
-      <!-- Dynamic Bottom Tick Bar -->
       <div id="bottom-scale"></div>
-      
-      <!-- Dynamic Vertical Ticker -->
       <div id="vertical-ticker"></div>
     </div>
     
-    <div id="status">Click "Ignite" to launch the rocket.</div>
+    <div id="status">Waiting for run...</div>
     
     <!-- Buttons -->
     <button id="ignite">Ignite</button>
     <button id="cashout" disabled>Cash Out</button>
     
-    <!-- Bottom Info Container for Total and Current Discounts -->
+    <!-- Bottom Info Container -->
     <div id="bottom-info">
       <div id="discount-display">Total Discount: 0.00%</div>
       <div id="current-discount">Current: 0.00%</div>
