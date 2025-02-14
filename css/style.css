@@ -10,14 +10,15 @@ body {
   padding: 20px;
 }
 
+/* Smaller Title */
 h1 {
   margin-bottom: 20px;
-  font-size: 1.2em; /* Much smaller title */
+  font-size: 1.2em;
   color: #fff;
   text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
 }
 
-/* Game Container (original size) */
+/* Game Container (reverted to original size) */
 #game-container {
   background: rgba(0,0,0,0.5);
   border: 2px solid rgba(255,255,255,0.3);
@@ -40,13 +41,14 @@ h1 {
   z-index: 100;
 }
 
-/* Rocket Container with background space5.jpg (darkened) */
+/* Rocket Container (scaled down for in-frame fit) */
 #rocket-container {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: 400px; /* Reduced height */
   margin-bottom: 20px;
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/space5.jpg') no-repeat center center;
+  /* Dark overlay added */
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/space6.jpg') no-repeat center center;
   background-size: cover;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: 12px;
@@ -54,23 +56,23 @@ h1 {
   box-shadow: inset 0 0 15px rgba(0,0,0,0.7);
 }
 
-/* Rocket Wrapper */
+/* Rocket Wrapper (scaled down) */
 #rocket-wrapper {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 150px;
-  height: 200px;
+  width: 120px;  /* Reduced width */
+  height: 160px; /* Reduced height */
   transition: left 0.2s ease, bottom 0.2s ease;
 }
 
-/* Rocket Image */
+/* Rocket Image (scaled down) */
 #rocket {
   position: absolute;
-  bottom: 50px;
+  bottom: 40px;  /* Adjusted for new size */
   left: 50%;
   transform: translateX(-50%);
-  width: 100px;
+  width: 80px;  /* Reduced width */
   z-index: 3;
   filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.7));
 }
@@ -78,7 +80,7 @@ h1 {
 /* Real-time Discount Display above Rocket */
 #ship-discount {
   position: absolute;
-  bottom: 80%;  /* Closer to the rocket */
+  bottom: 75%;  /* Adjusted closer to rocket */
   left: 50%;
   transform: translateX(-50%);
   font-size: 1em;
@@ -87,12 +89,12 @@ h1 {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
-/* Explosion Image */
+/* Explosion Image (scaled down) */
 #explosion {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 150px;
+  width: 120px; /* Adjusted width */
   display: none;
   z-index: 4;
 }
@@ -222,11 +224,9 @@ h1 {
   color: #ddd;
 }
 
-/* Button Styles - ensuring entire button is clickable */
+/* Button Styles */
 button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   padding: 10px 20px;
   font-size: 1em;
   cursor: pointer;
