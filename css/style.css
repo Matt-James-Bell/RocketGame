@@ -179,7 +179,7 @@ h1 {
 
 /* Button Container - side by side */
 #button-container {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   gap: 10px; /* Reduced gap for closer buttons */
   margin: 10px 0;
@@ -224,9 +224,7 @@ h1 {
 
 /* Button Styles */
 button {
-  display: block;
-  width: 200px;
-  margin: 0 auto;
+  display: inline-block;
   padding: 10px 20px;
   font-size: 1em;
   cursor: pointer;
