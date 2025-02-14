@@ -7,18 +7,18 @@ let gameActive = false;
 let crashed = false;
 let crashPoint;
 let startTime;
-// Total accumulated discount from previous runs
+// Total accumulated discount (winnings from cashed-out runs)
 let accumulatedDiscount = 0;
-// Flag to indicate if the player joined the current run (clicked Ignite)
+// Flag indicating if the player joined the current run (clicked Ignite)
 let playerJoined = false;
 // Countdown variables
 let countdownInterval;
-let firstRun = true; // first run countdown: 10 seconds, then 5 seconds for subsequent runs
+let firstRun = true; // First run: 10 seconds countdown; subsequent: 5 seconds
 
 /**
  * Global mapping function for vertical positioning.
- * For discount <= 2.00, returns a value from 0 to 0.3;
- * for discount > 2.00, returns a value from 0.3 to 1.
+ * For discount <= 2.00: returns a value from 0 to 0.3;
+ * for discount > 2.00: returns a value from 0.3 to 1.
  */
 function mapDiscountToNormalized(d) {
   if (d <= 2.00) {
@@ -65,7 +65,7 @@ function updateBottomScale() {
     bottomScale.appendChild(label);
   }
   
-  // Position the red marker at the rocket's center X.
+  // Place the red marker at the rocket's center X.
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const container = document.getElementById("rocket-container");
   const rocketRect = rocketWrapper.getBoundingClientRect();
@@ -116,7 +116,7 @@ function updateVerticalTicker() {
     verticalTicker.appendChild(label);
   }
   
-  // Position the red marker using the rocket-wrapper's offsetTop.
+  // Use rocket-wrapper.offsetTop to position the red marker at its center Y.
   const rocketWrapper = document.getElementById("rocket-wrapper");
   const rocketCenterY = rocketWrapper.offsetTop + rocketWrapper.offsetHeight / 2;
   
@@ -128,7 +128,7 @@ function updateVerticalTicker() {
 
 /**
  * Update the rocket's position.
- * Smoothly interpolate from the starting position (assumed at bottom left) to the center as discount goes from 0.01 to 1.
+ * Smoothly interpolate from starting position (assumed bottom-left) to the center as discount goes from 0.01 to 1.
  * Once discount >= 1, the rocket remains fixed at the center.
  */
 function updateRocketPosition() {
@@ -144,8 +144,7 @@ function updateRocketPosition() {
   let centerY = (containerHeight - wrapperHeight) / 2;
   
   if (discount < 1.0) {
-    // Interpolate linearly from (0,0) to (centerX, centerY)
-    let t = (discount - 0.01) / (1 - 0.01);
+    let t = (discount - 0.01) / (1 - 0.01); // t from 0 to 1
     let newLeft = (1 - t) * 0 + t * centerX;
     let newBottom = (1 - t) * 0 + t * centerY;
     rocketWrapper.style.left = newLeft + "px";
@@ -171,14 +170,14 @@ function startGame() {
   discount = 0.01;
   crashed = false;
   gameActive = true;
-  playerJoined = true;  // Player clicked Ignite, so they've joined.
+  playerJoined = true; // Player clicked Ignite
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
   document.getElementById("cashout").disabled = false;
   document.getElementById("ignite").disabled = true;
   
-  // Hide explosion, show rocket.
+  // Show rocket, hide explosion.
   document.getElementById("rocket-wrapper").style.display = "block";
   document.getElementById("explosion").style.display = "none";
   
@@ -221,13 +220,14 @@ function updateGame() {
 
 /**
  * Handle rocket crash.
- * If the player had joined the run (playerJoined true) then total discount resets; if not, it remains unchanged.
+ * If the player joined the run, reset total discount; if not, preserve total.
  */
 function crash() {
   gameActive = false;
   crashed = true;
   clearInterval(gameInterval);
   
+  // Reset total discount only if the player joined this run.
   if (playerJoined) {
     accumulatedDiscount = 0;
     updateAccumulatedDiscount();
@@ -244,14 +244,14 @@ function crash() {
   
   document.getElementById("status").textContent = "Run crashed!";
   document.getElementById("cashout").disabled = true;
-  document.getElementById("ignite").disabled = true;
+  document.getElementById("ignite").disabled = false;
   
+  // After 2 seconds, start a new countdown.
   setTimeout(startCountdown, 2000);
 }
 
 /**
  * Handle Cash Out.
- * If the player has joined the run, cash out is allowed.
  */
 function cashOut() {
   if (!gameActive || crashed || !playerJoined) return;
@@ -266,10 +266,10 @@ function cashOut() {
   accumulatedDiscount += discount;
   updateAccumulatedDiscount();
   
-  // Change discount display above rocket to green.
+  // Change discount display above the rocket to green.
   document.getElementById("ship-discount").style.color = "green";
   
-  // Instead of popup, update status message.
+  // Update status message (no popup).
   document.getElementById("status").textContent += " Congratulations!";
   
   setTimeout(startCountdown, 2000);
@@ -284,11 +284,13 @@ function updateAccumulatedDiscount() {
 
 /**
  * Start a countdown for the next run.
- * For the first run, countdown from 10 seconds; afterwards, from 5 seconds.
- * During the countdown, the player may click Ignite to join the run.
- * If they click, playerJoined is set to true; otherwise, it remains false.
+ * For the first run, count from 10 seconds; thereafter, from 5 seconds.
+ * During the countdown, the player may click Ignite to join.
  */
 function startCountdown() {
+  // Reset playerJoined flag.
+  playerJoined = false;
+  
   const countdownDiv = document.getElementById("countdown");
   let duration = firstRun ? 10 : 5;
   countdownDiv.style.display = "block";
@@ -304,10 +306,9 @@ function startCountdown() {
     } else {
       clearInterval(countdownInterval);
       countdownDiv.style.display = "none";
-      // Auto-start the run if player hasn't clicked Ignite.
+      // Auto-start the run if the player hasn't clicked Ignite.
       if (!gameActive) {
-        // Player did not join.
-        playerJoined = false;
+        // If player didn't join, playerJoined remains false.
         startRun();
       }
     }
