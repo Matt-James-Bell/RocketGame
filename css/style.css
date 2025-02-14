@@ -78,7 +78,7 @@ h1 {
 /* Real-time Discount Display above Rocket */
 #ship-discount {
   position: absolute;
-  bottom: 80%; /* Moved closer to the rocket */
+  bottom: 80%; /* Closer to the rocket */
   left: 50%;
   transform: translateX(-50%);
   font-size: 1em;
@@ -177,6 +177,14 @@ h1 {
   background: red;
 }
 
+/* Button Container - display buttons side by side */
+#button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 10px 0;
+}
+
 /* Bottom Info Container */
 #bottom-info {
   display: flex;
@@ -217,7 +225,7 @@ h1 {
 button {
   display: block;
   width: 200px;
-  margin: 10px auto;
+  margin: 0 auto;
   padding: 10px 20px;
   font-size: 1em;
   cursor: pointer;
