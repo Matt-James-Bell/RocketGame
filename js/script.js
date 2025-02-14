@@ -124,7 +124,6 @@ function startGame() {
   discount = 0.01;
   crashed = false;
   gameActive = true;
-  // Do not override playerJoined (set via Ignite during countdown)
   startTime = Date.now();
   updateDisplay();
   document.getElementById("status").textContent = "Run in progress... Hit Cash Out to lock in your discount!";
